@@ -194,9 +194,9 @@
       </div>
 
       <div class="tabs">
-        <button class="tab active" onclick="switchTab('direct')">Direktni matchovi</button>
-        <button class="tab" onclick="switchTab('chain')">Lanac razmena</button>
-        <button class="tab" onclick="switchTab('notifications')">Notifikacije</button>
+        <button class="tab active" onclick="switchTab('direct', this)">Direktni matchovi</button>
+        <button class="tab" onclick="switchTab('chain', this)">Lanac razmena</button>
+        <button class="tab" onclick="switchTab('notifications', this)">Notifikacije</button>
       </div>
 
       <div id="directMatches" class="tab-content">
@@ -368,10 +368,12 @@
       return labels[type] || type;
     }
 
-    function switchTab(tab) {
+    function switchTab(tab, clickedElement) {
       // Update active tab
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      event.target.classList.add('active');
+      if (clickedElement) {
+        clickedElement.classList.add('active');
+      }
 
       // Show/hide content
       document.getElementById('directMatches').style.display = tab === 'direct' ? 'block' : 'none';

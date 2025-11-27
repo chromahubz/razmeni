@@ -12,8 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const listing = getListingById(listingId);
 
   if (!listing) {
-    alert('Oglas nije pronađen');
-    window.location.href = 'listings.html';
+    if (typeof Toast !== 'undefined') {
+      Toast.error('Oglas nije pronađen');
+    }
+    setTimeout(() => {
+      window.location.href = 'listings.html';
+    }, 1500);
     return;
   }
 

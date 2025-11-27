@@ -362,10 +362,10 @@
       </div>
 
       <div class="trades-tabs">
-        <button class="tab active" onclick="switchTab('received')">
+        <button class="tab active" onclick="switchTab('received', this)">
           Primljeni predlozi (<span id="receivedCount">0</span>)
         </button>
-        <button class="tab" onclick="switchTab('sent')">
+        <button class="tab" onclick="switchTab('sent', this)">
           Poslati predlozi (<span id="sentCount">0</span>)
         </button>
       </div>
@@ -642,7 +642,7 @@
 
             ${trade.status === 'accepted' ? `
               <div class="trade-actions">
-                <button class="btn btn-primary" onclick="alert('Chat funkcionalnost uskoro!')">
+                <button class="btn btn-primary" onclick="Toast.info('Chat funkcionalnost uskoro!')">
                   Otvori chat
                 </button>
                 <button class="btn btn-secondary" onclick="completeTrade(${trade.id})">
@@ -667,10 +667,12 @@
       }).join('');
     }
 
-    function switchTab(tab) {
+    function switchTab(tab, clickedElement) {
       // Update tab buttons
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      event.target.classList.add('active');
+      if (clickedElement) {
+        clickedElement.classList.add('active');
+      }
 
       // Update tab content
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));

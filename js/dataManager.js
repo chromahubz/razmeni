@@ -13,7 +13,11 @@ class DataManager {
       }
     } catch (error) {
       console.error('localStorage nije dostupan:', error);
-      alert('Upozorenje: Podaci neće biti sačuvani. Molimo omogućite localStorage u vašem pretraživaču.');
+      console.warn('Upozorenje: Podaci neće biti sačuvani. Molimo omogućite localStorage u vašem pretraživaču.');
+      // Show error in UI if Toast is available
+      if (typeof Toast !== 'undefined') {
+        Toast.error('localStorage nije dostupan. Podaci neće biti sačuvani.');
+      }
     }
   }
 
