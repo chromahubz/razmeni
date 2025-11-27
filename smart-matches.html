@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Matchovi - Razmeni</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .match-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+      border-left: 4px solid var(--primary);
+      transition: all 0.3s;
+    }
+
+    .match-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateX(4px);
+    }
+
+    .match-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .match-score {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .match-type {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .match-type.direct {
+      background: #10b981;
+      color: white;
+    }
+
+    .match-type.category {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .match-type.location {
+      background: #f59e0b;
+      color: white;
+    }
+
+    .match-type.chain {
+      background: #8b5cf6;
+      color: white;
+    }
+
+    .match-listings {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 1rem;
+      align-items: center;
+      margin: 1rem 0;
+    }
+
+    .match-arrow {
+      font-size: 24px;
+      color: var(--primary);
+    }
+
+    .mini-listing {
+      background: var(--gray-50);
+      padding: 1rem;
+      border-radius: var(--radius);
+    }
+
+    .mini-listing-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      font-size: 15px;
+    }
+
+    .mini-listing-points {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--gray-200);
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--gray-300);
+    }
+
+    .user-details h4 {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .user-stats {
+      font-size: 13px;
+      color: var(--gray-600);
+    }
+
+    .empty-matches {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: var(--gray-50);
+      border-radius: var(--radius-lg);
+    }
+
+    .empty-matches h3 {
+      font-size: 24px;
+      margin-bottom: 0.5rem;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid var(--gray-200);
+    }
+
+    .tab {
+      padding: 0.75rem 1.5rem;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      font-weight: 600;
+      color: var(--gray-600);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .chain-participants {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      margin: 1rem 0;
+    }
+
+    .chain-step {
+      flex: 1;
+      text-align: center;
+      padding: 1rem;
+      background: var(--gray-50);
+      border-radius: var(--radius);
+    }
+
+    .chain-arrow {
+      color: var(--primary);
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container navbar-content">
+      <!-- Navbar will be rendered by navbar.js -->
+    </div>
+  </nav>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h1>🎯 Smart Matchovi</h1>
+        <p>AI predlozi razmena posebno za tebe</p>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('direct')">Direktni matchovi</button>
+        <button class="tab" onclick="switchTab('chain')">Lanac razmena</button>
+        <button class="tab" onclick="switchTab('notifications')">Notifikacije</button>
+      </div>
+
+      <div id="directMatches" class="tab-content">
+        <!-- Direct matches će biti ubačeni -->
+      </div>
+
+      <div id="chainMatches" class="tab-content" style="display: none;">
+        <!-- Chain matches će biti ubačeni -->
+      </div>
+
+      <div id="matchNotifications" class="tab-content" style="display: none;">
+        <!-- Notifications će biti ubačene -->
+      </div>
+    </div>
+  </section>
+
+  <script src="js/mockData.js"></script>
+  <script src="js/dataManager.js"></script>
+  <script src="js/matchingEngine.js"></script>
+  <script src="js/navbar.js"></script>
+  <script src="js/toast.js"></script>
+  <script>
+    // Check if logged in
+    if (!dataManager.isLoggedIn()) {
+      window.location.href = 'login.html';
+    }
+
+    const currentUser = dataManager.getCurrentUser();
+
+    // Load matches
+    function loadDirectMatches() {
+      const matches = matchingEngine.findMatches(currentUser.id);
+      const container = document.getElementById('directMatches');
+
+      if (matches.length === 0) {
+        container.innerHTML = `
+          <div class="empty-matches">
+            <h3>📭 Nema matchova</h3>
+            <p>Dodaj još oglasa da bi dobio bolje match predloge!</p>
+            <a href="create-listing.html" class="btn btn-primary btn-lg">Dodaj oglas</a>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = matches.map(match => `
+        <div class="match-card">
+          <div class="match-header">
+            <span class="match-type ${match.type}">${getMatchTypeLabel(match.type)}</span>
+            <span class="match-score">${match.score}% match</span>
+          </div>
+
+          <p style="font-size: 16px; margin-bottom: 0.5rem; color: var(--gray-700);">
+            ${match.message}
+          </p>
+
+          <div class="match-listings">
+            <div class="mini-listing">
+              <div class="mini-listing-title">Tvoj oglas:</div>
+              <div>${match.myListing.title}</div>
+              <div class="mini-listing-points">${match.myListing.points} poena</div>
+            </div>
+
+            <div class="match-arrow">⇄</div>
+
+            <div class="mini-listing">
+              <div class="mini-listing-title">Njihov oglas:</div>
+              <div>${match.theirListing.title}</div>
+              <div class="mini-listing-points">${match.theirListing.points} poena</div>
+            </div>
+          </div>
+
+          <div class="user-info">
+            <div class="user-avatar"></div>
+            <div class="user-details">
+              <h4>${match.otherUser.name}</h4>
+              <div class="user-stats">
+                Trust Score: ${match.otherUser.trustScore} |
+                ${match.otherUser.totalTrades} razmena
+              </div>
+            </div>
+            <div style="margin-left: auto;">
+              <a href="listing-detail.html?id=${match.theirListing.id}" class="btn btn-primary">
+                Vidi oglas
+              </a>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function loadChainMatches() {
+      const chains = matchingEngine.findChainTrades(currentUser.id);
+      const container = document.getElementById('chainMatches');
+
+      if (chains.length === 0) {
+        container.innerHTML = `
+          <div class="empty-matches">
+            <h3>🔗 Nema chain matchova</h3>
+            <p>Chain razmene su retke, ali veoma moćne!</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = chains.map(chain => `
+        <div class="match-card">
+          <div class="match-header">
+            <span class="match-type chain">⛓️ Lanac razmena</span>
+            <span class="match-score">${chain.score}% match</span>
+          </div>
+
+          <p style="font-size: 16px; margin-bottom: 1rem; color: var(--gray-700);">
+            ${chain.message}
+          </p>
+
+          <div class="chain-participants">
+            ${chain.participants.map((p, i) => `
+              ${i > 0 ? '<span class="chain-arrow">→</span>' : ''}
+              <div class="chain-step">
+                <strong>${p.user.name === currentUser.fullName ? 'TI' : p.user.name}</strong>
+                <div style="font-size: 13px; margin-top: 0.25rem;">${p.listing.title}</div>
+                <div class="mini-listing-points">${p.listing.points} poena</div>
+              </div>
+            `).join('')}
+          </div>
+
+          <div style="text-align: center; margin-top: 1.5rem;">
+            <button class="btn btn-primary" onclick="initiateChainTrade()">
+              Pokreni chain razmenu
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function loadNotifications() {
+      const notifications = matchingEngine.getNotifications(currentUser.id);
+      const container = document.getElementById('matchNotifications');
+
+      if (notifications.length === 0) {
+        container.innerHTML = `
+          <div class="empty-matches">
+            <h3>🔔 Nema notifikacija</h3>
+            <p>Dobi ćeš notifikaciju kada neko postavi oglas koji te interesuje!</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = notifications.map(notif => `
+        <div class="match-card">
+          <p>${notif.message}</p>
+          <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+            <a href="listing-detail.html?id=${notif.listingId}" class="btn btn-primary">Vidi oglas</a>
+            <button class="btn btn-secondary" onclick="dismissNotification(${notif.id})">Odbaci</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function getMatchTypeLabel(type) {
+      const labels = {
+        direct: '🎯 Direktan match',
+        category: '📂 Ista kategorija',
+        location: '📍 Ista lokacija',
+        chain: '⛓️ Lanac razmena'
+      };
+      return labels[type] || type;
+    }
+
+    function switchTab(tab) {
+      // Update active tab
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+
+      // Show/hide content
+      document.getElementById('directMatches').style.display = tab === 'direct' ? 'block' : 'none';
+      document.getElementById('chainMatches').style.display = tab === 'chain' ? 'block' : 'none';
+      document.getElementById('matchNotifications').style.display = tab === 'notifications' ? 'block' : 'none';
+    }
+
+    function initiateChainTrade() {
+      Toast.info('Chain trade funkcionalnost će uskoro biti dostupna!');
+    }
+
+    function dismissNotification(id) {
+      matchingEngine.markNotificationRead(id);
+      loadNotifications();
+      Toast.success('Notifikacija odbačena');
+    }
+
+    // Load initial data
+    loadDirectMatches();
+    loadChainMatches();
+    loadNotifications();
+  </script>
+</body>
+</html>

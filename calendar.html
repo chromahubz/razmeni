@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kalendar Razmena - Razmeni</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .calendar-container {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .calendar-sidebar {
+      background: white;
+      padding: 1.5rem;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      height: fit-content;
+    }
+
+    .calendar-main {
+      background: white;
+      padding: 2rem;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+
+    .upcoming-events {
+      list-style: none;
+      padding: 0;
+    }
+
+    .upcoming-event {
+      padding: 1rem;
+      border-left: 4px solid var(--primary);
+      background: var(--gray-50);
+      border-radius: var(--radius);
+      margin-bottom: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .upcoming-event:hover {
+      background: var(--gray-100);
+      transform: translateX(4px);
+    }
+
+    .event-date {
+      font-size: 12px;
+      color: var(--gray-600);
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .event-title {
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .event-location {
+      font-size: 13px;
+      color: var(--gray-600);
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px;
+      background: var(--gray-200);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .calendar-day-header {
+      background: var(--gray-100);
+      padding: 0.75rem;
+      text-align: center;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .calendar-day {
+      background: white;
+      min-height: 100px;
+      padding: 0.5rem;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .calendar-day:hover {
+      background: var(--gray-50);
+    }
+
+    .calendar-day.other-month {
+      background: var(--gray-50);
+      color: var(--gray-400);
+    }
+
+    .calendar-day.today {
+      background: #eff6ff;
+      border: 2px solid var(--primary);
+    }
+
+    .calendar-day.has-event {
+      background: #f0fdf4;
+    }
+
+    .day-number {
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .day-event-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: inline-block;
+      margin: 2px;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .calendar-nav {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .month-year {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .event-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .event-modal.active {
+      display: flex;
+    }
+
+    .event-modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: var(--radius-lg);
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius);
+      font-family: inherit;
+    }
+
+    .event-detail {
+      background: var(--gray-50);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      margin-bottom: 1rem;
+    }
+
+    .event-detail-row {
+      display: flex;
+      margin-bottom: 0.75rem;
+      gap: 0.5rem;
+    }
+
+    .event-detail-label {
+      font-weight: 600;
+      min-width: 100px;
+    }
+
+    .recurring-badge {
+      background: #8b5cf6;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-box {
+      background: white;
+      padding: 1.5rem;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--gray-600);
+      margin-top: 0.25rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container navbar-content">
+      <!-- Navbar will be rendered by navbar.js -->
+    </div>
+  </nav>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h1>📅 Kalendar Razmena</h1>
+        <p>Zakažite i organizujte svoje razmene</p>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row" id="scheduleStats">
+        <!-- Stats će biti ubačeni -->
+      </div>
+
+      <div class="calendar-container">
+        <!-- Sidebar -->
+        <div class="calendar-sidebar">
+          <h3>Nadolazećei razmene</h3>
+          <ul class="upcoming-events" id="upcomingEvents">
+            <!-- Events će biti ubačeni -->
+          </ul>
+
+          <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="showScheduleModal()">
+            + Zakazi razmenu
+          </button>
+        </div>
+
+        <!-- Calendar -->
+        <div class="calendar-main">
+          <div class="calendar-header">
+            <div class="month-year" id="monthYear">Januar 2024</div>
+            <div class="calendar-nav">
+              <button class="btn btn-secondary" onclick="previousMonth()">←</button>
+              <button class="btn btn-secondary" onclick="nextMonth()">→</button>
+              <button class="btn btn-secondary" onclick="goToToday()">Danas</button>
+            </div>
+          </div>
+
+          <div class="calendar-grid" id="calendarGrid">
+            <!-- Calendar će biti generisan -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Event Modal -->
+  <div class="event-modal" id="eventModal">
+    <div class="event-modal-content">
+      <h2 id="modalTitle">Zakazi razmenu</h2>
+      <div id="modalContent">
+        <!-- Modal content će biti ubačen -->
+      </div>
+    </div>
+  </div>
+
+  <script src="js/mockData.js"></script>
+  <script src="js/dataManager.js"></script>
+  <script src="js/scheduling.js"></script>
+  <script src="js/navbar.js"></script>
+  <script src="js/toast.js"></script>
+  <script>
+    // Check if logged in
+    if (!dataManager.isLoggedIn()) {
+      window.location.href = 'login.html';
+    }
+
+    const currentUser = dataManager.getCurrentUser();
+    let currentDate = new Date();
+
+    // Load stats
+    function loadStats() {
+      const stats = schedulingSystem.getSchedulingStats(currentUser.id);
+      document.getElementById('scheduleStats').innerHTML = `
+        <div class="stat-box">
+          <div class="stat-number">${stats.upcoming}</div>
+          <div class="stat-label">Nadolazeće</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">${stats.completed}</div>
+          <div class="stat-label">Završene</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">${stats.recurringActive}</div>
+          <div class="stat-label">Ponavljajuće</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">${stats.total}</div>
+          <div class="stat-label">Ukupno</div>
+        </div>
+      `;
+    }
+
+    // Load upcoming events
+    function loadUpcomingEvents() {
+      const events = schedulingSystem.getUserScheduledEvents(currentUser.id);
+      const container = document.getElementById('upcomingEvents');
+
+      if (events.length === 0) {
+        container.innerHTML = '<li style="text-align: center; color: var(--gray-600); padding: 1rem;">Nema zakazanih razmena</li>';
+        return;
+      }
+
+      container.innerHTML = events.slice(0, 5).map(event => {
+        const date = new Date(event.scheduledDateTime);
+        const dateStr = date.toLocaleDateString('sr-RS', { day: 'numeric', month: 'short' });
+        const timeStr = date.toLocaleTimeString('sr-RS', { hour: '2-digit', minute: '2-digit' });
+
+        return `
+          <li class="upcoming-event" onclick="showEventDetail(${event.id})">
+            <div class="event-date">${dateStr} ${timeStr}</div>
+            <div class="event-title">Razmena</div>
+            <div class="event-location">📍 ${event.location?.name || 'Lokacija nije određena'}</div>
+          </li>
+        `;
+      }).join('');
+    }
+
+    // Render calendar
+    function renderCalendar() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+
+      // Update month/year display
+      const monthNames = ['Januar', 'Februar', 'Mart', 'April', 'Maj', 'Jun', 'Jul', 'Avgust', 'Septembar', 'Oktobar', 'Novembar', 'Decembar'];
+      document.getElementById('monthYear').textContent = `${monthNames[month]} ${year}`;
+
+      // Get calendar data
+      const calendarData = schedulingSystem.getCalendarData(currentUser.id, month, year);
+
+      // Calendar grid
+      const grid = document.getElementById('calendarGrid');
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const today = new Date();
+
+      let html = '';
+
+      // Day headers
+      const dayNames = ['Ned', 'Pon', 'Uto', 'Sre', 'Čet', 'Pet', 'Sub'];
+      dayNames.forEach(day => {
+        html += `<div class="calendar-day-header">${day}</div>`;
+      });
+
+      // Empty cells for days before month starts
+      for (let i = 0; i < firstDay; i++) {
+        html += '<div class="calendar-day other-month"></div>';
+      }
+
+      // Days of month
+      for (let day = 1; day <= daysInMonth; day++) {
+        const isToday = today.getDate() === day && today.getMonth() === month && today.getFullYear() === year;
+        const hasEvents = calendarData[day] && calendarData[day].length > 0;
+        const classes = ['calendar-day'];
+
+        if (isToday) classes.push('today');
+        if (hasEvents) classes.push('has-event');
+
+        html += `
+          <div class="${classes.join(' ')}" onclick="showDayEvents(${day})">
+            <div class="day-number">${day}</div>
+            ${hasEvents ? calendarData[day].map(() => '<span class="day-event-dot"></span>').join('') : ''}
+          </div>
+        `;
+      }
+
+      grid.innerHTML = html;
+    }
+
+    // Show schedule modal
+    function showScheduleModal() {
+      const modal = document.getElementById('eventModal');
+      const content = document.getElementById('modalContent');
+
+      content.innerHTML = `
+        <form onsubmit="scheduleEvent(event)">
+          <div class="form-group">
+            <label>Datum</label>
+            <input type="date" name="date" required>
+          </div>
+          <div class="form-group">
+            <label>Vreme</label>
+            <input type="time" name="time" required value="10:00">
+          </div>
+          <div class="form-group">
+            <label>Lokacija</label>
+            <input type="text" name="location" placeholder="Trg Republike, Beograd" required>
+          </div>
+          <div class="form-group">
+            <label>Napomena</label>
+            <textarea name="notes" rows="3"></textarea>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button type="submit" class="btn btn-primary">Zakazi</button>
+            <button type="button" class="btn btn-secondary" onclick="closeModal()">Otkaži</button>
+          </div>
+        </form>
+      `;
+
+      modal.classList.add('active');
+    }
+
+    // Schedule event
+    function scheduleEvent(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+
+      // Mock trade ID (in real app, user would select a trade)
+      const trades = dataManager.getTrades(currentUser.id);
+      const pendingTrade = trades.find(t => t.status === 'accepted');
+
+      if (!pendingTrade) {
+        Toast.warning('Nema prihvaćenih razmena za zakazivanje');
+        return;
+      }
+
+      const result = schedulingSystem.scheduleTradeExchange(
+        pendingTrade.id,
+        formData.get('date'),
+        formData.get('time'),
+        { name: formData.get('location') },
+        formData.get('notes')
+      );
+
+      if (result.success) {
+        Toast.success('Razmena uspešno zakazana!');
+        closeModal();
+        loadUpcomingEvents();
+        loadStats();
+        renderCalendar();
+      } else {
+        Toast.error(result.error);
+      }
+    }
+
+    // Show day events
+    function showDayEvents(day) {
+      const month = currentDate.getMonth();
+      const year = currentDate.getFullYear();
+      const date = new Date(year, month, day);
+
+      const events = schedulingSystem.getEventsForDate(currentUser.id, date);
+
+      if (events.length === 0) {
+        Toast.info(`Nema razmena za ${day}. ${currentDate.toLocaleDateString('sr-RS', { month: 'long' })}`);
+        return;
+      }
+
+      showEventDetail(events[0].id);
+    }
+
+    // Show event detail
+    function showEventDetail(eventId) {
+      const events = JSON.parse(localStorage.getItem('scheduledEvents') || '[]');
+      const event = events.find(e => e.id === eventId);
+
+      if (!event) return;
+
+      const modal = document.getElementById('eventModal');
+      const content = document.getElementById('modalContent');
+      const date = new Date(event.scheduledDateTime);
+
+      content.innerHTML = `
+        <div class="event-detail">
+          <h3 style="margin-top: 0;">Detalji razmene</h3>
+
+          <div class="event-detail-row">
+            <span class="event-detail-label">Datum:</span>
+            <span>${date.toLocaleDateString('sr-RS', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+          </div>
+
+          <div class="event-detail-row">
+            <span class="event-detail-label">Vreme:</span>
+            <span>${date.toLocaleTimeString('sr-RS', { hour: '2-digit', minute: '2-digit' })}</span>
+          </div>
+
+          <div class="event-detail-row">
+            <span class="event-detail-label">Lokacija:</span>
+            <span>📍 ${event.location?.name || 'Nije određeno'}</span>
+          </div>
+
+          ${event.notes ? `
+            <div class="event-detail-row">
+              <span class="event-detail-label">Napomena:</span>
+              <span>${event.notes}</span>
+            </div>
+          ` : ''}
+
+          <div class="event-detail-row">
+            <span class="event-detail-label">Status:</span>
+            <span>${event.status === 'scheduled' ? '✅ Zakazano' : event.status}</span>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn btn-primary" onclick="completeEvent(${event.id})">Završi razmenu</button>
+          <button class="btn btn-danger" onclick="cancelEvent(${event.id})">Otkaži</button>
+          <button class="btn btn-secondary" onclick="closeModal()">Zatvori</button>
+        </div>
+      `;
+
+      modal.classList.add('active');
+    }
+
+    // Complete event
+    function completeEvent(eventId) {
+      if (!confirm('Da li želite da označite razmenu kao završenu?')) return;
+
+      const result = schedulingSystem.completeScheduledEvent(eventId);
+
+      if (result.success) {
+        Toast.success('Razmena označena kao završena!');
+        closeModal();
+        loadUpcomingEvents();
+        loadStats();
+        renderCalendar();
+
+        // Redirect to rating
+        setTimeout(() => {
+          window.location.href = `trades.html`;
+        }, 1500);
+      } else {
+        Toast.error(result.error);
+      }
+    }
+
+    // Cancel event
+    function cancelEvent(eventId) {
+      if (!confirm('Da li ste sigurni da želite da otkažete razmenu?')) return;
+
+      const result = schedulingSystem.cancelScheduledEvent(eventId, currentUser.id);
+
+      if (result.success) {
+        Toast.success('Razmena otkazana');
+        closeModal();
+        loadUpcomingEvents();
+        loadStats();
+        renderCalendar();
+      } else {
+        Toast.error(result.error);
+      }
+    }
+
+    // Close modal
+    function closeModal() {
+      document.getElementById('eventModal').classList.remove('active');
+    }
+
+    // Calendar navigation
+    function previousMonth() {
+      currentDate.setMonth(currentDate.getMonth() - 1);
+      renderCalendar();
+    }
+
+    function nextMonth() {
+      currentDate.setMonth(currentDate.getMonth() + 1);
+      renderCalendar();
+    }
+
+    function goToToday() {
+      currentDate = new Date();
+      renderCalendar();
+    }
+
+    // Close modal on outside click
+    document.getElementById('eventModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeModal();
+      }
+    });
+
+    // Load initial data
+    loadStats();
+    loadUpcomingEvents();
+    renderCalendar();
+  </script>
+</body>
+</html>
