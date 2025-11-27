@@ -216,7 +216,7 @@
   </section>
 
   <!-- My Listings -->
-  <section class="section" style="background: var(--gray-50); padding: 3rem 0;">
+  <section class="section my-listings-section">
     <div class="container">
       <h2 class="section-title">Moji oglasi</h2>
 
@@ -304,8 +304,8 @@
       emptyState.style.display = 'block';
     } else {
       myListingsContainer.innerHTML = myListings.map(listing => `
-        <div class="listing-card" style="position: relative;">
-          <a href="listing-detail.html?id=${listing.id}" style="display: block; text-decoration: none; color: inherit;">
+        <div class="listing-card listing-card-wrapper">
+          <a href="listing-detail.html?id=${listing.id}" class="listing-card-link">
             <img src="${listing.images[0]}" alt="${listing.title}" class="listing-card-image">
             <div class="listing-card-content">
               <div class="badge badge-category">${listing.categoryName}</div>
@@ -318,11 +318,11 @@
               </div>
             </div>
           </a>
-          <div style="padding: 1rem; border-top: 1px solid var(--gray-200); display: flex; gap: 0.5rem;">
-            <button class="btn btn-secondary" style="flex: 1; padding: 0.625rem; font-size: 14px;" onclick="editListing(${listing.id})">
+          <div class="listing-actions">
+            <button class="btn btn-secondary" onclick="editListing(${listing.id})">
               Izmeni
             </button>
-            <button class="btn btn-secondary" style="flex: 1; padding: 0.625rem; font-size: 14px; background: #dc2626; border-color: #dc2626;" onclick="deleteListing(${listing.id})">
+            <button class="btn btn-danger" onclick="deleteListing(${listing.id})">
               Obriši
             </button>
           </div>
