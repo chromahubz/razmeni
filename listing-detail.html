@@ -733,8 +733,8 @@
       const myListings = dataManager.getListings().filter(l => l.userId === currentUser.id);
 
       if (myListings.length === 0) {
-        alert('Nemate nijedan oglas. Prvo dodajte oglas kako biste mogli da predložite razmenu.');
-        window.location.href = 'create-listing.html';
+        Toast.warning('Nemate nijedan oglas. Prvo dodajte oglas kako biste mogli da predložite razmenu.');
+        setTimeout(() => window.location.href = 'create-listing.html', 2000);
         return;
       }
 
@@ -771,7 +771,7 @@
       const selectedListingInput = document.querySelector('input[name="tradeListing"]:checked');
 
       if (!selectedListingInput) {
-        alert('Molimo izaberite oglas za razmenu');
+        Toast.warning('Molimo izaberite oglas za razmenu');
         return;
       }
 
@@ -786,10 +786,10 @@
 
       if (result.success) {
         closeTradeModal();
-        alert('Predlog razmene je uspešno poslat!');
-        window.location.href = 'trades.html';
+        Toast.success('Predlog razmene je uspešno poslat!');
+        setTimeout(() => window.location.href = 'trades.html', 1000);
       } else {
-        alert('Greška: ' + result.error);
+        Toast.error('Greška: ' + result.error);
       }
     }
 

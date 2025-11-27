@@ -163,7 +163,7 @@
     <div class="container">
       <div class="dashboard-welcome">
         <h1>Dobrodošli, <span id="userNameWelcome"></span></h1>
-        <p>Upravljajte svojim oglasima i razmeneama</p>
+        <p>Upravljajte svojim oglasima i razmenama</p>
       </div>
 
       <div class="stats-grid">
@@ -273,6 +273,7 @@
   <script src="js/mockData.js"></script>
   <script src="js/dataManager.js"></script>
   <script src="js/navbar.js"></script>
+  <script src="js/toast.js"></script>
   <script>
     // Check if logged in
     if (!dataManager.isLoggedIn()) {
@@ -341,10 +342,10 @@
       const result = dataManager.deleteListing(id);
 
       if (result.success) {
-        alert('Oglas je uspešno obrisan!');
-        location.reload();
+        Toast.success('Oglas je uspešno obrisan!');
+        setTimeout(() => location.reload(), 1000);
       } else {
-        alert('Greška: ' + result.error);
+        Toast.error('Greška: ' + result.error);
       }
     }
 

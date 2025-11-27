@@ -484,6 +484,7 @@
   <script src="js/mockData.js"></script>
   <script src="js/dataManager.js"></script>
   <script src="js/navbar.js"></script>
+  <script src="js/toast.js"></script>
   <script>
     // Check if logged in
     if (!dataManager.isLoggedIn()) {
@@ -498,14 +499,16 @@
     const listing = dataManager.getListingById(listingId);
 
     if (!listing) {
-      alert('Oglas nije pronađen');
-      window.location.href = 'dashboard.html';
+      Toast.error('Oglas nije pronađen');
+      setTimeout(() => window.location.href = 'dashboard.html', 1500);
+      return;
     }
 
     // Check if user owns this listing
     if (listing.userId !== currentUser.id) {
-      alert('Nemate dozvolu da izmenite ovaj oglas');
-      window.location.href = 'dashboard.html';
+      Toast.error('Nemate dozvolu da izmenite ovaj oglas');
+      setTimeout(() => window.location.href = 'dashboard.html', 1500);
+      return;
     }
 
     // Pre-fill form with existing data
@@ -629,9 +632,10 @@
       const result = dataManager.updateListing(listingId, listingData);
 
       if (result.success) {
-        alert('Oglas je uspešno ažuriran!');
-        window.location.href = `listing-detail.html?id=${listingId}`;
+        Toast.success('Oglas je uspešno ažuriran!');
+        setTimeout(() => window.location.href = `listing-detail.html?id=${listingId}`, 1000);
       } else {
+        Toast.error(result.error);
         errorMessage.textContent = result.error;
         errorMessage.classList.add('show');
       }
