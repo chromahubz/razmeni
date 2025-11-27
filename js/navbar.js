@@ -24,15 +24,15 @@ function renderNavbar() {
       <ul class="navbar-links">
         <li><a href="index.html">Početna</a></li>
         <li><a href="listings.html">Oglasi</a></li>
-        <li><a href="smart-matches.html">🎯 Matchovi</a></li>
+        <li><a href="smart-matches.html">Matchovi</a></li>
         <li><a href="favorites.html">Omiljeni</a></li>
         <li><a href="dashboard.html">Dashboard</a></li>
         <li><a href="trades.html" style="position: relative;">
           Razmene
           ${pendingTrades > 0 ? `<span class="badge">${pendingTrades}</span>` : ''}
         </a></li>
-        <li><a href="calendar.html">📅 Kalendar</a></li>
-        <li><a href="achievements.html">🏆 Achievements</a></li>
+        <li><a href="calendar.html">Kalendar</a></li>
+        <li><a href="achievements.html">Achievements</a></li>
         <li><a href="messages.html" style="position: relative;">
           Poruke
           ${unreadMessages > 0 ? `<span class="badge">${unreadMessages}</span>` : ''}
