@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Razmeni - Moderna Barter Platforma</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container navbar-content">
+      <!-- Navbar will be rendered by navbar.js -->
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <h1>Razmenjuj stvari i usluge<br>bez korišćenja novca</h1>
+      <p>Moderna barter platforma za Srbiju. Razmenjujte voće, povrće, proizvode i usluge direktno sa drugim ljudima. Bez provizije, bez skrivenih troškova - samo poštena razmena.</p>
+      <div class="hero-actions">
+        <a href="listings.html" class="btn btn-primary btn-lg">Pretraži oglase</a>
+        <a href="#kako" class="btn btn-secondary btn-lg">Saznaj više</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEO Content Section -->
+  <section class="section" style="background: white;">
+    <div class="container">
+      <div style="max-width: 800px; margin: 0 auto;">
+        <h2 style="font-size: 32px; font-weight: 700; margin-bottom: 1.5rem; color: var(--gray-900);">
+          Šta je Razmeni?
+        </h2>
+        <p style="font-size: 17px; line-height: 1.8; color: var(--gray-700); margin-bottom: 1.5rem;">
+          Razmeni je moderna digitalna platforma koja omogućava razmenu robe i usluga bez korišćenja novca.
+          Bilo da imate višak domaćih proizvoda, potrebna vam je određena usluga, ili želite da ponudite svoje
+          veštine - naša platforma povezuje ljude koji žele da razmenjuju.
+        </p>
+        <p style="font-size: 17px; line-height: 1.8; color: var(--gray-700); margin-bottom: 1.5rem;">
+          Koristimo poenski sistem koji omogućava fer i transparentnu razmenu. Svaki proizvod ili usluga ima
+          svoju vrednost u poenima, što olakšava procenu i pravi ravnotežu između onoga što nudite i onoga što
+          tražite. Bez potrebe za gotovinom, bez skrivenih troškova - samo direktna razmena između ljudi.
+        </p>
+        <h3 style="font-size: 24px; font-weight: 600; margin: 2rem 0 1rem; color: var(--gray-900);">
+          Zašto koristiti Razmeni platformu?
+        </h3>
+        <ul style="font-size: 17px; line-height: 1.8; color: var(--gray-700); padding-left: 1.5rem;">
+          <li style="margin-bottom: 0.75rem;">
+            <strong>Bez novca:</strong> Razmenjujte direktno bez korišćenja gotovine
+          </li>
+          <li style="margin-bottom: 0.75rem;">
+            <strong>Lokalno:</strong> Povežite se sa ljudima iz svoje okoline
+          </li>
+          <li style="margin-bottom: 0.75rem;">
+            <strong>Ekološki:</strong> Smanjite otpad i podržite održivu potrošnju
+          </li>
+          <li style="margin-bottom: 0.75rem;">
+            <strong>Sigurno:</strong> Trust Score sistem za proveru pouzdanosti korisnika
+          </li>
+          <li style="margin-bottom: 0.75rem;">
+            <strong>Jednostavno:</strong> Intuitivna platforma za brzo postavljanje oglasa
+          </li>
+          <li style="margin-bottom: 0.75rem;">
+            <strong>Besplatno:</strong> Nema provizije ni skrivenih troškova
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Kategorije</h2>
+        <p>Izaberi kategoriju i pronađi šta ti treba</p>
+      </div>
+
+      <div class="grid grid-3">
+        <a href="listings.html?category=voce" class="category-card">
+          <div class="category-name">Voće</div>
+        </a>
+
+        <a href="listings.html?category=povrce" class="category-card">
+          <div class="category-name">Povrće</div>
+        </a>
+
+        <a href="listings.html?category=mlecni" class="category-card">
+          <div class="category-name">Mlečni proizvodi</div>
+        </a>
+
+        <a href="listings.html?category=pekarski" class="category-card">
+          <div class="category-name">Pekarski proizvodi</div>
+        </a>
+
+        <a href="listings.html?category=usluge" class="category-card">
+          <div class="category-name">Usluge</div>
+        </a>
+
+        <a href="listings.html?category=ostalo" class="category-card">
+          <div class="category-name">Ostalo</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Popular Listings -->
+  <section class="section" style="background: white; padding: 4rem 0;">
+    <div class="container">
+      <div class="section-header">
+        <h2>Popularni oglasi</h2>
+        <p>Najnovije i najpopularnije razmene</p>
+      </div>
+
+      <div class="grid grid-3" id="popular-listings">
+        <!-- Listings će biti ubačeni sa JavaScript-om -->
+      </div>
+
+      <div class="text-center mt-8">
+        <a href="listings.html" class="btn btn-primary btn-lg">Vidi sve oglase</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="section" id="kako">
+    <div class="container">
+      <div class="section-header">
+        <h2>Kako funkcioniše?</h2>
+        <p>Jednostavna razmena u 3 koraka</p>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <h3>Postavi oglas</h3>
+          <p>Dodaj šta nudiš - voće, povrće, proizvod ili uslugu. Dodaj slike i odredi vrednost u poenima.</p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">2</div>
+          <h3>Pronađi šta ti treba</h3>
+          <p>Pretraži oglase i pronađi šta želiš. Predloži razmenu direktno vlasniku oglasa.</p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">3</div>
+          <h3>Razmeni</h3>
+          <p>Dogovorite se o preuzimanju, realizujte razmenu i ocenite jedno drugo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+    <div class="container text-center">
+      <h2 style="font-size: 42px; margin-bottom: 1.5rem; color: white;">Spreman za razmenu?</h2>
+      <p style="font-size: 20px; margin-bottom: 2rem; opacity: 0.95;">Pridruži se zajednici i počni da razmenjuješ danas!</p>
+      <a href="listings.html" class="btn btn-primary btn-lg" style="background: white; color: #667eea;">Kreiraj besplatan nalog</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Razmeni</h3>
+          <ul class="footer-links">
+            <li><a href="#">O nama</a></li>
+            <li><a href="#">Kako funkcioniše</a></li>
+            <li><a href="#">Blog</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h3>Podrška</h3>
+          <ul class="footer-links">
+            <li><a href="#">Pomoć</a></li>
+            <li><a href="#">Kontakt</a></li>
+            <li><a href="#">FAQ</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h3>Pravno</h3>
+          <ul class="footer-links">
+            <li><a href="#">Uslovi korišćenja</a></li>
+            <li><a href="#">Politika privatnosti</a></li>
+            <li><a href="#">Kolačići</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        &copy; 2024 Razmeni. Sva prava zadržana.
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/mockData.js"></script>
+  <script src="js/dataManager.js"></script>
+  <script src="js/navbar.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>

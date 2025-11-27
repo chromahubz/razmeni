@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Poruke - Razmeni</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .messages-container {
+      min-height: 100vh;
+      background: var(--gray-50);
+      padding: 2rem 0;
+    }
+
+    .messages-layout {
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 1.5rem;
+      height: calc(100vh - 8rem);
+    }
+
+    .conversations-panel {
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .conversations-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .conversations-header h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .conversation-search {
+      width: 100%;
+      padding: 0.625rem 1rem;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius);
+      font-size: 14px;
+    }
+
+    .conversations-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .conversation-item {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--gray-100);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .conversation-item:hover {
+      background: var(--gray-50);
+    }
+
+    .conversation-item.active {
+      background: rgba(0, 122, 255, 0.05);
+      border-left: 3px solid var(--primary);
+    }
+
+    .conversation-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .conversation-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .conversation-name {
+      font-weight: 600;
+      font-size: 15px;
+      margin-bottom: 0.25rem;
+      color: var(--gray-900);
+    }
+
+    .conversation-preview {
+      font-size: 13px;
+      color: var(--gray-600);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .conversation-time {
+      font-size: 12px;
+      color: var(--gray-500);
+    }
+
+    .chat-panel {
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chat-header-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .chat-user-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--gray-900);
+    }
+
+    .chat-user-status {
+      font-size: 13px;
+      color: var(--gray-600);
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .message {
+      display: flex;
+      gap: 0.75rem;
+      max-width: 70%;
+    }
+
+    .message.own {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+
+    .message-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .message-content {
+      flex: 1;
+    }
+
+    .message-bubble {
+      background: var(--gray-100);
+      padding: 0.75rem 1rem;
+      border-radius: 1rem;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--gray-900);
+    }
+
+    .message.own .message-bubble {
+      background: var(--primary);
+      color: white;
+    }
+
+    .message-time {
+      font-size: 11px;
+      color: var(--gray-500);
+      margin-top: 0.25rem;
+      padding: 0 0.5rem;
+    }
+
+    .chat-input-area {
+      padding: 1.5rem;
+      border-top: 1px solid var(--gray-200);
+    }
+
+    .chat-input-form {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 0.875rem 1rem;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius-lg);
+      font-size: 14px;
+      resize: none;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    .chat-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .btn-send {
+      padding: 0.875rem 1.5rem;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .empty-chat {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      color: var(--gray-500);
+    }
+
+    .empty-chat-icon {
+      font-size: 64px;
+      margin-bottom: 1rem;
+      opacity: 0.3;
+    }
+
+    @media (max-width: 768px) {
+      .messages-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .conversations-panel {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container navbar-content">
+      <!-- Navbar will be rendered by navbar.js -->
+    </div>
+  </nav>
+
+  <div class="messages-container">
+    <div class="container">
+      <div class="messages-layout">
+        <!-- Conversations Panel -->
+        <div class="conversations-panel">
+          <div class="conversations-header">
+            <h2>Poruke</h2>
+            <input
+              type="text"
+              class="conversation-search"
+              placeholder="Pretraži razgovore..."
+              id="searchConversations"
+            >
+          </div>
+          <div class="conversations-list" id="conversationsList">
+            <!-- Conversations will be rendered here -->
+          </div>
+        </div>
+
+        <!-- Chat Panel -->
+        <div class="chat-panel">
+          <div id="chatContent">
+            <div class="empty-chat">
+              <div class="empty-chat-icon">💬</div>
+              <p>Izaberite razgovor da započnete chat</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/mockData.js"></script>
+  <script src="js/dataManager.js"></script>
+  <script src="js/navbar.js"></script>
+  <script src="js/toast.js"></script>
+  <script>
+    // Check if logged in
+    if (!dataManager.isLoggedIn()) {
+      window.location.href = 'login.html';
+    }
+
+    const currentUser = dataManager.getCurrentUser();
+
+    // Get all trades for current user
+    const myTrades = dataManager.getTrades(currentUser.id);
+    const acceptedTrades = myTrades.filter(t => t.status === 'accepted' || t.status === 'completed');
+
+    // Create conversations from accepted trades
+    const conversations = acceptedTrades.map(trade => {
+      const otherUserId = trade.requesterId === currentUser.id ? trade.ownerId : trade.requesterId;
+      const offeredListing = dataManager.getListingById(trade.offeredListingId);
+      const requestedListing = dataManager.getListingById(trade.requestedListingId);
+
+      // Get other user info from listing
+      const otherUser = trade.requesterId === currentUser.id
+        ? requestedListing?.user
+        : offeredListing?.user;
+
+      if (!otherUser) return null;
+
+      return {
+        id: trade.id,
+        user: otherUser,
+        lastMessage: 'Razmena je prihvaćena',
+        time: formatDate(trade.createdAt),
+        unread: false
+      };
+    }).filter(c => c !== null);
+
+    // Render conversations
+    function renderConversations() {
+      const list = document.getElementById('conversationsList');
+
+      if (conversations.length === 0) {
+        list.innerHTML = `
+          <div style="padding: 2rem; text-align: center; color: var(--gray-500);">
+            <p>Nemate aktivnih razgovora</p>
+            <p style="font-size: 13px; margin-top: 0.5rem;">Prihvatite razmenu da započnete chat</p>
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = conversations.map((conv, index) => {
+        const initials = conv.user.name.split(' ').map(n => n[0]).join('');
+        return `
+          <div class="conversation-item ${index === 0 ? 'active' : ''}" onclick="openChat(${conv.id})">
+            <div class="conversation-avatar">${initials}</div>
+            <div class="conversation-info">
+              <div class="conversation-name">${conv.user.name}</div>
+              <div class="conversation-preview">${conv.lastMessage}</div>
+            </div>
+            <div class="conversation-time">${conv.time}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openChat(tradeId) {
+      // Update active conversation
+      document.querySelectorAll('.conversation-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      event.currentTarget.classList.add('active');
+
+      const conversation = conversations.find(c => c.id === tradeId);
+      if (!conversation) return;
+
+      // Get messages for this trade
+      const messages = dataManager.getMessages(tradeId);
+
+      // Mark all messages as read
+      dataManager.markAllMessagesAsRead(tradeId);
+
+      const chatContent = document.getElementById('chatContent');
+      const initials = conversation.user.name.split(' ').map(n => n[0]).join('');
+      const myInitials = currentUser.fullName.split(' ').map(n => n[0]).join('');
+
+      chatContent.innerHTML = `
+        <div class="chat-header">
+          <div class="chat-header-info">
+            <div class="conversation-avatar">${initials}</div>
+            <div>
+              <div class="chat-user-name">${conversation.user.name}</div>
+              <div class="chat-user-status">Trust Score: ${conversation.user.trustScore}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+          ${messages.length === 0 ? `
+            <div style="text-align: center; color: var(--gray-500); padding: 2rem;">
+              Započnite razgovor...
+            </div>
+          ` : messages.map(msg => {
+            const isOwn = msg.senderId === currentUser.id;
+            const msgInitials = isOwn ? myInitials : initials;
+            return `
+              <div class="message ${isOwn ? 'own' : ''}">
+                <div class="message-avatar">${msgInitials}</div>
+                <div class="message-content">
+                  <div class="message-bubble">${msg.text}</div>
+                  <div class="message-time">${formatDate(msg.createdAt)}</div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        <div class="chat-input-area">
+          <form class="chat-input-form" onsubmit="sendMessage(event, ${tradeId})">
+            <textarea
+              class="chat-input"
+              placeholder="Napišite poruku..."
+              id="messageInput"
+              rows="1"
+            ></textarea>
+            <button type="submit" class="btn btn-primary btn-send">Pošalji</button>
+          </form>
+        </div>
+      `;
+
+      // Scroll to bottom
+      setTimeout(() => {
+        const messagesEl = document.getElementById('chatMessages');
+        if (messagesEl) {
+          messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
+      }, 100);
+    }
+
+    function sendMessage(event, tradeId) {
+      event.preventDefault();
+
+      const input = document.getElementById('messageInput');
+      const text = input.value.trim();
+
+      if (!text) return;
+
+      const result = dataManager.sendMessage({
+        tradeId: tradeId,
+        text: text
+      });
+
+      if (result.success) {
+        input.value = '';
+        openChat(tradeId); // Refresh chat
+        Toast.success('Poruka poslata');
+      } else {
+        Toast.error('Greška: ' + result.error);
+      }
+    }
+
+    // Search conversations
+    document.getElementById('searchConversations').addEventListener('input', (e) => {
+      const search = e.target.value.toLowerCase();
+      document.querySelectorAll('.conversation-item').forEach(item => {
+        const name = item.querySelector('.conversation-name').textContent.toLowerCase();
+        item.style.display = name.includes(search) ? 'flex' : 'none';
+      });
+    });
+
+    // Initial render
+    renderConversations();
+
+    // Open first conversation if available
+    if (conversations.length > 0) {
+      setTimeout(() => openChat(conversations[0].id), 100);
+    }
+  </script>
+</body>
+</html>

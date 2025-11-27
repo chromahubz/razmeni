@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profil - Razmeni</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .profile-container {
+      padding: 3rem 0;
+      background: var(--gray-50);
+      min-height: 100vh;
+    }
+
+    .profile-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 3rem 0;
+      margin-bottom: 3rem;
+    }
+
+    .profile-header-content {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .profile-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--primary);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .profile-info h1 {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .profile-meta {
+      font-size: 16px;
+      opacity: 0.9;
+      margin-bottom: 1rem;
+    }
+
+    .profile-stats {
+      display: flex;
+      gap: 2rem;
+      margin-top: 1rem;
+    }
+
+    .profile-stat {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .profile-stat-value {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .profile-stat-label {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    .profile-content {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 2rem;
+    }
+
+    .profile-section {
+      margin-bottom: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .profile-section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .profile-section-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: var(--gray-900);
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .info-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-600);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .info-value {
+      font-size: 16px;
+      color: var(--gray-900);
+    }
+
+    .btn-edit-profile {
+      width: 100%;
+      padding: 0.875rem;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.625rem 1rem;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    @media (max-width: 768px) {
+      .profile-header-content {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .profile-stats {
+        justify-content: center;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container navbar-content">
+      <!-- Navbar will be rendered by navbar.js -->
+    </div>
+  </nav>
+
+  <div class="profile-header">
+    <div class="container">
+      <div class="profile-header-content">
+        <div class="profile-avatar" id="profileAvatar"></div>
+        <div class="profile-info">
+          <h1 id="profileName"></h1>
+          <div class="profile-meta">
+            Član od <span id="memberSince"></span>
+          </div>
+          <div class="profile-stats">
+            <div class="profile-stat">
+              <span class="profile-stat-value" id="statTrustScore">0</span>
+              <span class="profile-stat-label">Trust Score</span>
+            </div>
+            <div class="profile-stat">
+              <span class="profile-stat-value" id="statListings">0</span>
+              <span class="profile-stat-label">Oglasa</span>
+            </div>
+            <div class="profile-stat">
+              <span class="profile-stat-value" id="statTrades">0</span>
+              <span class="profile-stat-label">Razmena</span>
+            </div>
+            <div class="profile-stat">
+              <span class="profile-stat-value" id="statRatings">0</span>
+              <span class="profile-stat-label">Ocena</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-container">
+    <div class="container">
+      <div class="profile-content">
+        <div class="profile-section">
+          <h2 class="profile-section-title">Osnovne informacije</h2>
+          <div class="info-grid" id="infoDisplay">
+            <div class="info-item">
+              <div class="info-label">Email</div>
+              <div class="info-value" id="userEmail"></div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Telefon</div>
+              <div class="info-value" id="userPhone"></div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Grad</div>
+              <div class="info-value" id="userCity"></div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Prosečna ocena</div>
+              <div class="info-value" id="userRating"></div>
+            </div>
+          </div>
+          <form class="info-grid" id="infoEdit" style="display: none;" onsubmit="saveProfile(event)">
+            <div class="info-item">
+              <div class="info-label">Ime i prezime</div>
+              <input type="text" id="editFullName" class="form-input" required>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Email</div>
+              <input type="email" id="editEmail" class="form-input" required>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Telefon</div>
+              <input type="tel" id="editPhone" class="form-input">
+            </div>
+            <div class="info-item">
+              <div class="info-label">Grad</div>
+              <input type="text" id="editCity" class="form-input">
+            </div>
+          </form>
+        </div>
+
+        <div class="profile-section">
+          <button class="btn btn-primary btn-edit-profile" type="button" id="editBtn">
+            Izmeni profil
+          </button>
+          <button class="btn btn-primary btn-edit-profile" type="submit" id="saveBtn" style="display: none;" form="infoEdit">
+            Sačuvaj izmene
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Razmeni</h3>
+          <ul class="footer-links">
+            <li><a href="#">O nama</a></li>
+            <li><a href="#">Kako funkcioniše</a></li>
+            <li><a href="#">Blog</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h3>Podrška</h3>
+          <ul class="footer-links">
+            <li><a href="#">Pomoć</a></li>
+            <li><a href="#">Kontakt</a></li>
+            <li><a href="#">FAQ</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h3>Pravno</h3>
+          <ul class="footer-links">
+            <li><a href="#">Uslovi korišćenja</a></li>
+            <li><a href="#">Politika privatnosti</a></li>
+            <li><a href="#">Kolačići</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        &copy; 2024 Razmeni. Sva prava zadržana.
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/mockData.js"></script>
+  <script src="js/dataManager.js"></script>
+  <script src="js/navbar.js"></script>
+  <script src="js/toast.js"></script>
+  <script>
+    // Check if logged in
+    if (!dataManager.isLoggedIn()) {
+      window.location.href = 'login.html';
+    }
+
+    let currentUser = dataManager.getCurrentUser();
+    let isEditMode = false;
+
+    function displayUserInfo() {
+      // Display profile info
+      const initials = currentUser.fullName.split(' ').map(n => n[0]).join('');
+      document.getElementById('profileAvatar').textContent = initials;
+      document.getElementById('profileName').textContent = currentUser.fullName;
+
+      // Format member since date
+      const memberDate = new Date(currentUser.createdAt);
+      const options = { year: 'numeric', month: 'long' };
+      document.getElementById('memberSince').textContent = memberDate.toLocaleDateString('sr-RS', options);
+
+      // Display stats
+      const myListings = dataManager.getListings().filter(l => l.userId === currentUser.id);
+      document.getElementById('statTrustScore').textContent = currentUser.trustScore || 0;
+      document.getElementById('statListings').textContent = myListings.length;
+      document.getElementById('statTrades').textContent = currentUser.totalTrades || 0;
+      document.getElementById('statRatings').textContent = currentUser.totalRatings || 0;
+
+      // Display user info
+      document.getElementById('userEmail').textContent = currentUser.email;
+      document.getElementById('userPhone').textContent = currentUser.phone || 'Nije dodato';
+      document.getElementById('userCity').textContent = currentUser.locationCity || 'Nije dodato';
+
+      const rating = currentUser.averageRating || 0;
+      document.getElementById('userRating').textContent = rating > 0 ? `${rating.toFixed(1)} / 5.0` : 'Nema ocena';
+    }
+
+    function toggleEditMode() {
+      isEditMode = !isEditMode;
+
+      if (isEditMode) {
+        // Show edit form, hide display
+        document.getElementById('infoDisplay').style.display = 'none';
+        document.getElementById('infoEdit').style.display = 'grid';
+        document.getElementById('editBtn').style.display = 'none';
+        document.getElementById('saveBtn').style.display = 'block';
+
+        // Pre-fill form
+        document.getElementById('editFullName').value = currentUser.fullName;
+        document.getElementById('editEmail').value = currentUser.email;
+        document.getElementById('editPhone').value = currentUser.phone || '';
+        document.getElementById('editCity').value = currentUser.locationCity || '';
+      } else {
+        // Show display, hide edit form
+        document.getElementById('infoDisplay').style.display = 'grid';
+        document.getElementById('infoEdit').style.display = 'none';
+        document.getElementById('editBtn').style.display = 'block';
+        document.getElementById('saveBtn').style.display = 'none';
+      }
+    }
+
+    // Add event listener to edit button
+    document.getElementById('editBtn').addEventListener('click', toggleEditMode);
+
+    function saveProfile(event) {
+      event.preventDefault();
+
+      const updatedData = {
+        fullName: document.getElementById('editFullName').value,
+        email: document.getElementById('editEmail').value,
+        phone: document.getElementById('editPhone').value,
+        locationCity: document.getElementById('editCity').value
+      };
+
+      // Update user in localStorage
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const userIndex = users.findIndex(u => u.id === currentUser.id);
+
+      if (userIndex !== -1) {
+        users[userIndex] = { ...users[userIndex], ...updatedData };
+        localStorage.setItem('users', JSON.stringify(users));
+        localStorage.setItem('currentUser', JSON.stringify(users[userIndex]));
+
+        currentUser = users[userIndex];
+        displayUserInfo();
+        toggleEditMode();
+        Toast.success('Profil uspešno ažuriran');
+      } else {
+        Toast.error('Greška pri ažuriranju profila');
+      }
+    }
+
+    // Initial display
+    displayUserInfo();
+  </script>
+</body>
+</html>

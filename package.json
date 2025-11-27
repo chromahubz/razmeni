@@ -1,0 +1,23 @@
+{
+  "name": "razmeni",
+  "version": "2.0.0",
+  "description": "Modern barter platform for Serbia - Exchange goods and services",
+  "scripts": {
+    "dev": "python3 -m http.server 8000",
+    "start": "python3 -m http.server 8000",
+    "deploy": "vercel --prod"
+  },
+  "keywords": [
+    "barter",
+    "razmena",
+    "trade",
+    "exchange",
+    "serbia"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_USERNAME/razmeni.git"
+  }
+}

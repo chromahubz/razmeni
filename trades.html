@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Razmene - Razmeni</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .trades-container {
+      padding: 3rem 0;
+      background: var(--gray-50);
+      min-height: 100vh;
+    }
+
+    .trades-header {
+      margin-bottom: 2rem;
+    }
+
+    .trades-header h1 {
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .trades-header p {
+      color: var(--gray-600);
+      font-size: 16px;
+    }
+
+    .trades-tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid var(--gray-200);
+    }
+
+    .tab {
+      padding: 1rem 2rem;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--gray-600);
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: -2px;
+    }
+
+    .tab:hover {
+      color: var(--gray-900);
+    }
+
+    .tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .trade-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+      transition: all 0.2s;
+    }
+
+    .trade-card:hover {
+      box-shadow: var(--shadow-lg);
+    }
+
+    .trade-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .trade-date {
+      font-size: 14px;
+      color: var(--gray-600);
+    }
+
+    .trade-status {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-accepted {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-rejected {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .status-completed {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .trade-items {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 2rem;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .trade-item {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .trade-item-image {
+      width: 100px;
+      height: 100px;
+      border-radius: var(--radius);
+      object-fit: cover;
+    }
+
+    .trade-item-info {
+      flex: 1;
+    }
+
+    .trade-item-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--gray-900);
+    }
+
+    .trade-item-points {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .trade-item-user {
+      font-size: 14px;
+      color: var(--gray-600);
+    }
+
+    .trade-exchange-icon {
+      font-size: 24px;
+      color: var(--gray-400);
+    }
+
+    .trade-message {
+      background: var(--gray-50);
+      padding: 1rem;
+      border-radius: var(--radius);
+      margin-bottom: 1.5rem;
+    }
+
+    .trade-message-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 0.5rem;
+    }
+
+    .trade-message-text {
+      font-size: 14px;
+      color: var(--gray-600);
+      font-style: italic;
+    }
+
+    .trade-actions {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .trade-actions .btn {
+      flex: 1;
+      padding: 0.875rem;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: white;
+      border-radius: var(--radius-lg);
+    }
+
+    .empty-state h3 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--gray-900);
+    }
+
+    .empty-state p {
+      color: var(--gray-600);
+      margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .trade-items {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .trade-exchange-icon {
+        transform: rotate(90deg);
+        margin: 0.5rem 0;
+      }
+
+      .trade-actions {
+        flex-direction: column;
+      }
+    }
+
+    /* Rating Modal */
+    .rating-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .rating-modal.show {
+      display: flex;
+    }
+
+    .rating-modal-content {
+      background: white;
+      border-radius: var(--radius-lg);
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .rating-modal-header {
+      padding: 2rem 2rem 1rem;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .rating-modal-header h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .rating-modal-header p {
+      font-size: 14px;
+      color: var(--gray-600);
+    }
+
+    .rating-modal-body {
+      padding: 2rem;
+    }
+
+    .rating-stars {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .star {
+      font-size: 48px;
+      cursor: pointer;
+      color: var(--gray-300);
+      transition: all 0.2s;
+    }
+
+    .star:hover,
+    .star.active {
+      color: #fbbf24;
+    }
+
+    .rating-comment {
+      margin-bottom: 0;
+    }
+
+    .rating-comment .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--gray-900);
+    }
+
+    .rating-comment .form-textarea {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius);
+      font-size: 15px;
+      transition: all 0.2s;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      resize: vertical;
+    }
+
+    .rating-comment .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+    }
+
+    .rating-modal-footer {
+      padding: 1.5rem 2rem;
+      border-top: 1px solid var(--gray-200);
+      display: flex;
+      gap: 1rem;
+    }
+
+    .rating-modal-footer button {
+      flex: 1;
+      padding: 0.875rem;
+      font-size: 15px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container navbar-content">
+      <!-- Navbar will be rendered by navbar.js -->
+    </div>
+  </nav>
+
+  <div class="trades-container">
+    <div class="container">
+      <div class="trades-header">
+        <h1>Moje razmene</h1>
+        <p>Upravljajte predlozima razmena</p>
+      </div>
+
+      <div class="trades-tabs">
+        <button class="tab active" onclick="switchTab('received')">
+          Primljeni predlozi (<span id="receivedCount">0</span>)
+        </button>
+        <button class="tab" onclick="switchTab('sent')">
+          Poslati predlozi (<span id="sentCount">0</span>)
+        </button>
+      </div>
+
+      <!-- Received Trades -->
+      <div class="tab-content active" id="received-content">
+        <div id="receivedTrades"></div>
+      </div>
+
+      <!-- Sent Trades -->
+      <div class="tab-content" id="sent-content">
+        <div id="sentTrades"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Razmeni</h3>
+          <ul class="footer-links">
+            <li><a href="#">O nama</a></li>
+            <li><a href="#">Kako funkcioniše</a></li>
+            <li><a href="#">Blog</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h3>Podrška</h3>
+          <ul class="footer-links">
+            <li><a href="#">Pomoć</a></li>
+            <li><a href="#">Kontakt</a></li>
+            <li><a href="#">FAQ</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h3>Pravno</h3>
+          <ul class="footer-links">
+            <li><a href="#">Uslovi korišćenja</a></li>
+            <li><a href="#">Politika privatnosti</a></li>
+            <li><a href="#">Kolačići</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        &copy; 2024 Razmeni. Sva prava zadržana.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Rating Modal -->
+  <div class="rating-modal" id="ratingModal">
+    <div class="rating-modal-content">
+      <div class="rating-modal-header">
+        <h2>Ocenite korisnika</h2>
+        <p id="ratingUserName"></p>
+      </div>
+      <div class="rating-modal-body">
+        <div class="rating-stars" id="ratingStars">
+          <span class="star" onclick="setRating(1)">★</span>
+          <span class="star" onclick="setRating(2)">★</span>
+          <span class="star" onclick="setRating(3)">★</span>
+          <span class="star" onclick="setRating(4)">★</span>
+          <span class="star" onclick="setRating(5)">★</span>
+        </div>
+        <div class="rating-comment">
+          <label class="form-label" for="ratingComment">Komentar (opciono)</label>
+          <textarea
+            id="ratingComment"
+            class="form-textarea"
+            placeholder="Kako je protekla razmena?"
+            style="min-height: 100px;"
+          ></textarea>
+        </div>
+      </div>
+      <div class="rating-modal-footer">
+        <button class="btn btn-secondary" onclick="closeRatingModal()">
+          Otkaži
+        </button>
+        <button class="btn btn-primary" onclick="submitRating()">
+          Pošalji ocenu
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/mockData.js"></script>
+  <script src="js/dataManager.js"></script>
+  <script src="js/navbar.js"></script>
+  <script src="js/toast.js"></script>
+  <script>
+    // Check if logged in
+    if (!dataManager.isLoggedIn()) {
+      window.location.href = 'login.html';
+    }
+
+    const currentUser = dataManager.getCurrentUser();
+
+    let allTrades = dataManager.getTrades(currentUser.id);
+
+    // Separate trades into received and sent
+    const receivedTrades = allTrades.filter(t => t.ownerId === currentUser.id);
+    const sentTrades = allTrades.filter(t => t.requesterId === currentUser.id);
+
+    // Update counts
+    document.getElementById('receivedCount').textContent = receivedTrades.length;
+    document.getElementById('sentCount').textContent = sentTrades.length;
+
+    // Render trades
+    renderReceivedTrades();
+    renderSentTrades();
+
+    function renderReceivedTrades() {
+      const container = document.getElementById('receivedTrades');
+
+      if (receivedTrades.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <h3>Nemate primljenih predloga</h3>
+            <p>Kada neko predloži razmenu za vaš oglas, pojaviće se ovde</p>
+            <a href="dashboard.html" class="btn btn-primary">Nazad na dashboard</a>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = receivedTrades.map(trade => {
+        const offeredListing = dataManager.getListingById(trade.offeredListingId);
+        const requestedListing = dataManager.getListingById(trade.requestedListingId);
+
+        if (!offeredListing || !requestedListing) return '';
+
+        const statusClass = `status-${trade.status}`;
+        const statusText = {
+          'pending': 'Na čekanju',
+          'accepted': 'Prihvaćeno',
+          'rejected': 'Odbijeno',
+          'completed': 'Završeno'
+        }[trade.status];
+
+        return `
+          <div class="trade-card">
+            <div class="trade-header">
+              <div class="trade-date">${formatDate(trade.createdAt)}</div>
+              <div class="trade-status ${statusClass}">${statusText}</div>
+            </div>
+
+            <div class="trade-items">
+              <div class="trade-item">
+                <img src="${offeredListing.images[0]}" alt="${offeredListing.title}" class="trade-item-image">
+                <div class="trade-item-info">
+                  <div class="trade-item-title">${offeredListing.title}</div>
+                  <div class="trade-item-points">${offeredListing.points} poena</div>
+                  <div class="trade-item-user">Nudi: ${offeredListing.user.name}</div>
+                </div>
+              </div>
+
+              <div class="trade-exchange-icon">⇄</div>
+
+              <div class="trade-item">
+                <img src="${requestedListing.images[0]}" alt="${requestedListing.title}" class="trade-item-image">
+                <div class="trade-item-info">
+                  <div class="trade-item-title">${requestedListing.title}</div>
+                  <div class="trade-item-points">${requestedListing.points} poena</div>
+                  <div class="trade-item-user">Vaš oglas</div>
+                </div>
+              </div>
+            </div>
+
+            ${trade.message ? `
+              <div class="trade-message">
+                <div class="trade-message-label">Poruka:</div>
+                <div class="trade-message-text">"${trade.message}"</div>
+              </div>
+            ` : ''}
+
+            ${trade.status === 'pending' ? `
+              <div class="trade-actions">
+                <button class="btn btn-primary" onclick="acceptTrade(${trade.id})">
+                  Prihvati razmenu
+                </button>
+                <button class="btn btn-secondary" onclick="rejectTrade(${trade.id})">
+                  Odbij
+                </button>
+              </div>
+            ` : trade.status === 'accepted' ? `
+              <div class="trade-actions">
+                <a href="messages.html" class="btn btn-primary">
+                  Otvori chat
+                </a>
+                <button class="btn btn-secondary" onclick="completeTrade(${trade.id})">
+                  Označi kao završeno
+                </button>
+              </div>
+            ` : trade.status === 'completed' ? `
+              <div class="trade-actions">
+                <button class="btn btn-primary" onclick="openRatingModal(${trade.id}, ${offeredListing.userId}, '${offeredListing.user.name}')">
+                  Oceni korisnika
+                </button>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderSentTrades() {
+      const container = document.getElementById('sentTrades');
+
+      if (sentTrades.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <h3>Niste poslali nijedan predlog</h3>
+            <p>Pretražite oglase i predložite razmenu</p>
+            <a href="listings.html" class="btn btn-primary">Pretraži oglase</a>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = sentTrades.map(trade => {
+        const offeredListing = dataManager.getListingById(trade.offeredListingId);
+        const requestedListing = dataManager.getListingById(trade.requestedListingId);
+
+        if (!offeredListing || !requestedListing) return '';
+
+        const statusClass = `status-${trade.status}`;
+        const statusText = {
+          'pending': 'Na čekanju',
+          'accepted': 'Prihvaćeno',
+          'rejected': 'Odbijeno',
+          'completed': 'Završeno'
+        }[trade.status];
+
+        return `
+          <div class="trade-card">
+            <div class="trade-header">
+              <div class="trade-date">${formatDate(trade.createdAt)}</div>
+              <div class="trade-status ${statusClass}">${statusText}</div>
+            </div>
+
+            <div class="trade-items">
+              <div class="trade-item">
+                <img src="${offeredListing.images[0]}" alt="${offeredListing.title}" class="trade-item-image">
+                <div class="trade-item-info">
+                  <div class="trade-item-title">${offeredListing.title}</div>
+                  <div class="trade-item-points">${offeredListing.points} poena</div>
+                  <div class="trade-item-user">Vaš oglas</div>
+                </div>
+              </div>
+
+              <div class="trade-exchange-icon">⇄</div>
+
+              <div class="trade-item">
+                <img src="${requestedListing.images[0]}" alt="${requestedListing.title}" class="trade-item-image">
+                <div class="trade-item-info">
+                  <div class="trade-item-title">${requestedListing.title}</div>
+                  <div class="trade-item-points">${requestedListing.points} poena</div>
+                  <div class="trade-item-user">Traži: ${requestedListing.user.name}</div>
+                </div>
+              </div>
+            </div>
+
+            ${trade.message ? `
+              <div class="trade-message">
+                <div class="trade-message-label">Vaša poruka:</div>
+                <div class="trade-message-text">"${trade.message}"</div>
+              </div>
+            ` : ''}
+
+            ${trade.status === 'accepted' ? `
+              <div class="trade-actions">
+                <button class="btn btn-primary" onclick="alert('Chat funkcionalnost uskoro!')">
+                  Otvori chat
+                </button>
+                <button class="btn btn-secondary" onclick="completeTrade(${trade.id})">
+                  Označi kao završeno
+                </button>
+              </div>
+            ` : trade.status === 'pending' ? `
+              <div class="trade-actions">
+                <button class="btn btn-secondary" style="opacity: 0.7; cursor: not-allowed;" disabled>
+                  Čeka odgovor...
+                </button>
+              </div>
+            ` : trade.status === 'completed' ? `
+              <div class="trade-actions">
+                <button class="btn btn-primary" onclick="openRatingModal(${trade.id}, ${requestedListing.userId}, '${requestedListing.user.name}')">
+                  Oceni korisnika
+                </button>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function switchTab(tab) {
+      // Update tab buttons
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+
+      // Update tab content
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById(`${tab}-content`).classList.add('active');
+    }
+
+    function acceptTrade(tradeId) {
+      const result = dataManager.updateTradeStatus(tradeId, 'accepted');
+
+      if (result.success) {
+        Toast.success('Razmena prihvaćena! Možete sada komunicirati sa korisnikom.');
+        setTimeout(() => location.reload(), 1000);
+      } else {
+        Toast.error('Greška: ' + result.error);
+      }
+    }
+
+    function rejectTrade(tradeId) {
+      if (!confirm('Da li ste sigurni da želite da odbijete ovu razmenu?')) {
+        return;
+      }
+
+      const result = dataManager.updateTradeStatus(tradeId, 'rejected');
+
+      if (result.success) {
+        Toast.success('Razmena odbijena.');
+        setTimeout(() => location.reload(), 1000);
+      } else {
+        Toast.error('Greška: ' + result.error);
+      }
+    }
+
+    function completeTrade(tradeId) {
+      if (!confirm('Da li ste sigurni da je razmena uspešno završena?')) {
+        return;
+      }
+
+      const result = dataManager.updateTradeStatus(tradeId, 'completed');
+
+      if (result.success) {
+        Toast.success('Razmena označena kao završena! Možete sada oceniti korisnika.');
+        setTimeout(() => location.reload(), 1000);
+      } else {
+        Toast.error('Greška: ' + result.error);
+      }
+    }
+
+    // Rating functions
+    let currentRating = 0;
+    let ratingToUserId = null;
+    let ratingTradeId = null;
+
+    function openRatingModal(tradeId, userId, userName) {
+      ratingTradeId = tradeId;
+      ratingToUserId = userId;
+      currentRating = 0;
+
+      document.getElementById('ratingUserName').textContent = `Ocenite korisnika: ${userName}`;
+      document.getElementById('ratingComment').value = '';
+
+      // Reset stars
+      document.querySelectorAll('.star').forEach(star => star.classList.remove('active'));
+
+      document.getElementById('ratingModal').classList.add('show');
+    }
+
+    function closeRatingModal() {
+      document.getElementById('ratingModal').classList.remove('show');
+      currentRating = 0;
+      ratingToUserId = null;
+      ratingTradeId = null;
+    }
+
+    function setRating(rating) {
+      currentRating = rating;
+      const stars = document.querySelectorAll('.star');
+      stars.forEach((star, index) => {
+        if (index < rating) {
+          star.classList.add('active');
+        } else {
+          star.classList.remove('active');
+        }
+      });
+    }
+
+    function submitRating() {
+      if (currentRating === 0) {
+        Toast.warning('Molimo izaberite ocenu (1-5 zvezda)');
+        return;
+      }
+
+      const comment = document.getElementById('ratingComment').value;
+
+      const result = dataManager.createRating({
+        toUserId: ratingToUserId,
+        tradeId: ratingTradeId,
+        rating: currentRating,
+        comment: comment
+      });
+
+      if (result.success) {
+        closeRatingModal();
+        Toast.success('Hvala na oceni!');
+        setTimeout(() => location.reload(), 1000);
+      } else {
+        Toast.error('Greška: ' + result.error);
+      }
+    }
+
+    // Close modal on outside click
+    document.getElementById('ratingModal').addEventListener('click', (e) => {
+      if (e.target.id === 'ratingModal') {
+        closeRatingModal();
+      }
+    });
+  </script>
+</body>
+</html>

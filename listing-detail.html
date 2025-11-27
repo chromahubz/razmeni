@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalji oglasa - Razmeni</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .detail-container {
+      padding: 3rem 0;
+      background: var(--gray-50);
+      min-height: 100vh;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .detail-main {
+      background: white;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .image-gallery {
+      position: relative;
+    }
+
+    .main-image {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+    }
+
+    .image-thumbnails {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.5rem;
+      padding: 1rem;
+      background: var(--gray-50);
+    }
+
+    .thumbnail {
+      aspect-ratio: 1;
+      border-radius: var(--radius);
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .thumbnail.active {
+      border-color: var(--primary);
+    }
+
+    .thumbnail:hover {
+      border-color: var(--primary);
+      opacity: 0.8;
+    }
+
+    .thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .detail-content {
+      padding: 2rem;
+    }
+
+    .detail-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .detail-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--gray-900);
+    }
+
+    .detail-meta {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      font-size: 14px;
+      color: var(--gray-600);
+    }
+
+    .detail-price {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1.5rem;
+    }
+
+    .detail-price span {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--gray-600);
+      margin-left: 0.5rem;
+    }
+
+    .detail-section {
+      margin-bottom: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .detail-section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .detail-section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--gray-900);
+    }
+
+    .detail-description {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--gray-700);
+    }
+
+    .detail-info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .info-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-600);
+      margin-bottom: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .info-value {
+      font-size: 15px;
+      color: var(--gray-900);
+    }
+
+    .delivery-options {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .delivery-badge {
+      padding: 0.5rem 1rem;
+      background: var(--gray-100);
+      border-radius: var(--radius);
+      font-size: 14px;
+      color: var(--gray-700);
+    }
+
+    .detail-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .sidebar-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .seller-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .seller-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .seller-details h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .seller-stats {
+      font-size: 13px;
+      color: var(--gray-600);
+    }
+
+    .trust-score {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem;
+      background: var(--gray-50);
+      border-radius: var(--radius);
+      margin-bottom: 1.5rem;
+    }
+
+    .trust-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gray-700);
+    }
+
+    .trust-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .btn-propose {
+      width: 100%;
+      padding: 1rem;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+
+    .btn-contact {
+      width: 100%;
+      padding: 1rem;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .similar-section {
+      background: white;
+      padding: 3rem 0;
+    }
+
+    .similar-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 1024px) {
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .similar-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .image-thumbnails {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .detail-content {
+        padding: 1.5rem;
+      }
+
+      .detail-info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .similar-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* Trade Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: var(--radius-lg);
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      padding: 2rem 2rem 1rem;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .modal-header h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-header p {
+      font-size: 14px;
+      color: var(--gray-600);
+    }
+
+    .modal-body {
+      padding: 2rem;
+    }
+
+    .modal-footer {
+      padding: 1.5rem 2rem;
+      border-top: 1px solid var(--gray-200);
+      display: flex;
+      gap: 1rem;
+    }
+
+    .modal-footer button {
+      flex: 1;
+      padding: 0.875rem;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .my-listings-select {
+      display: grid;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .listing-option {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .listing-option:hover {
+      border-color: var(--primary);
+      background: rgba(0, 122, 255, 0.02);
+    }
+
+    .listing-option.selected {
+      border-color: var(--primary);
+      background: rgba(0, 122, 255, 0.05);
+    }
+
+    .listing-option input[type="radio"] {
+      margin: 0;
+    }
+
+    .listing-option-image {
+      width: 60px;
+      height: 60px;
+      border-radius: var(--radius);
+      object-fit: cover;
+    }
+
+    .listing-option-info {
+      flex: 1;
+    }
+
+    .listing-option-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .listing-option-points {
+      font-size: 14px;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .form-textarea {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius);
+      font-size: 15px;
+      transition: all 0.2s;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+    }
+
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--gray-900);
+    }
+
+    .form-group {
+      margin-bottom: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container navbar-content">
+      <!-- Navbar will be rendered by navbar.js -->
+    </div>
+  </nav>
+
+  <div class="detail-container">
+    <div class="container">
+      <div class="detail-grid">
+        <!-- Main Content -->
+        <div class="detail-main">
+          <div class="image-gallery">
+            <img id="mainImage" src="" alt="" class="main-image">
+            <div class="image-thumbnails" id="thumbnails"></div>
+          </div>
+
+          <div class="detail-content">
+            <div class="detail-header">
+              <div class="badge badge-category" id="categoryBadge"></div>
+              <h1 class="detail-title" id="listingTitle"></h1>
+              <div class="detail-meta">
+                <span id="listingCity"></span>
+                <span>•</span>
+                <span id="listingDate"></span>
+              </div>
+            </div>
+
+            <div class="detail-price">
+              <span id="listingPoints"></span>
+              <span>poena</span>
+            </div>
+
+            <div class="detail-section">
+              <h3 class="detail-section-title">Opis</h3>
+              <p class="detail-description" id="listingDescription"></p>
+            </div>
+
+            <div class="detail-section">
+              <h3 class="detail-section-title">Detalji</h3>
+              <div class="detail-info-grid">
+                <div class="info-item">
+                  <div class="info-label">Količina</div>
+                  <div class="info-value" id="listingQuantity"></div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label">Stanje</div>
+                  <div class="info-value" id="listingCondition"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="detail-section">
+              <h3 class="detail-section-title">Dostava</h3>
+              <div class="delivery-options" id="deliveryOptions"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="detail-sidebar">
+          <div class="sidebar-card">
+            <div class="seller-info">
+              <div class="seller-avatar" id="sellerAvatar"></div>
+              <div class="seller-details">
+                <h3 id="sellerName"></h3>
+                <div class="seller-stats" id="sellerStats"></div>
+              </div>
+            </div>
+
+            <div class="trust-score">
+              <span class="trust-label">Trust Score</span>
+              <span class="trust-value" id="trustScore"></span>
+            </div>
+
+            <button class="btn btn-primary btn-propose" id="btnPropose">
+              Predloži razmenu
+            </button>
+            <button class="btn btn-secondary" id="btnFavorite" style="margin-bottom: 0.75rem;">
+              <span id="favoriteIcon">♡</span> <span id="favoriteText">Dodaj u omiljene</span>
+            </button>
+            <button class="btn btn-secondary btn-contact">
+              Pošalji poruku
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Similar Listings -->
+  <section class="similar-section">
+    <div class="container">
+      <h2 class="section-title">Slični oglasi</h2>
+      <div class="similar-grid" id="similarListings"></div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Razmeni</h3>
+          <ul class="footer-links">
+            <li><a href="#">O nama</a></li>
+            <li><a href="#">Kako funkcioniše</a></li>
+            <li><a href="#">Blog</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h3>Podrška</h3>
+          <ul class="footer-links">
+            <li><a href="#">Pomoć</a></li>
+            <li><a href="#">Kontakt</a></li>
+            <li><a href="#">FAQ</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h3>Pravno</h3>
+          <ul class="footer-links">
+            <li><a href="#">Uslovi korišćenja</a></li>
+            <li><a href="#">Politika privatnosti</a></li>
+            <li><a href="#">Kolačići</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        &copy; 2024 Razmeni. Sva prava zadržana.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Trade Proposal Modal -->
+  <div class="modal" id="tradeModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Predloži razmenu</h2>
+        <p>Izaberi jedan od svojih oglasa za razmenu</p>
+      </div>
+      <div class="modal-body">
+        <div class="my-listings-select" id="myListingsSelect">
+          <!-- My listings will be inserted here -->
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="tradeMessage">Poruka (opciono)</label>
+          <textarea
+            id="tradeMessage"
+            class="form-textarea"
+            placeholder="Dodajte poruku uz predlog razmene..."
+          ></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeTradeModal()">
+          Otkaži
+        </button>
+        <button class="btn btn-primary" onclick="submitTrade()">
+          Pošalji predlog
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/mockData.js"></script>
+  <script src="js/dataManager.js"></script>
+  <script src="js/navbar.js"></script>
+  <script src="js/toast.js"></script>
+  <script>
+    // Get listing ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const listingId = parseInt(urlParams.get('id'));
+    const listing = dataManager.getListingById(listingId);
+
+    if (!listing) {
+      window.location.href = 'listings.html';
+    }
+
+    const currentUser = dataManager.getCurrentUser();
+
+    // Render listing details
+    document.getElementById('categoryBadge').textContent = listing.categoryName;
+    document.getElementById('listingTitle').textContent = listing.title;
+    document.getElementById('listingCity').textContent = listing.city;
+    document.getElementById('listingDate').textContent = formatDate(listing.createdAt);
+    document.getElementById('listingPoints').textContent = listing.points;
+    document.getElementById('listingDescription').textContent = listing.description;
+    document.getElementById('listingQuantity').textContent = listing.quantity + ' ' + listing.unit;
+    document.getElementById('listingCondition').textContent = listing.condition;
+
+    // Render images
+    if (listing.images && listing.images.length > 0) {
+      document.getElementById('mainImage').src = listing.images[0];
+      document.getElementById('mainImage').alt = listing.title;
+
+      const thumbnailsHtml = listing.images.map((img, index) => `
+        <div class="thumbnail ${index === 0 ? 'active' : ''}" onclick="changeMainImage('${img}', ${index})">
+          <img src="${img}" alt="Thumbnail ${index + 1}">
+        </div>
+      `).join('');
+      document.getElementById('thumbnails').innerHTML = thumbnailsHtml;
+    }
+
+    // Render delivery options
+    const deliveryHtml = [];
+    if (listing.offersPickup) deliveryHtml.push('<div class="delivery-badge">Lično preuzimanje</div>');
+    if (listing.offersDelivery) deliveryHtml.push('<div class="delivery-badge">Dostava dostupna</div>');
+    document.getElementById('deliveryOptions').innerHTML = deliveryHtml.join('');
+
+    // Render seller info
+    const initials = listing.user.name.split(' ').map(n => n[0]).join('');
+    document.getElementById('sellerAvatar').textContent = initials;
+    document.getElementById('sellerName').textContent = listing.user.name;
+    document.getElementById('sellerStats').textContent = `${listing.user.totalTrades} razmena • ${listing.user.totalRatings} ocena`;
+    document.getElementById('trustScore').textContent = listing.user.trustScore;
+
+    // Handle propose button
+    const proposeBtn = document.getElementById('btnPropose');
+    if (!currentUser) {
+      proposeBtn.onclick = () => {
+        window.location.href = 'login.html';
+      };
+    } else if (currentUser.id === listing.userId) {
+      proposeBtn.textContent = 'Vaš oglas';
+      proposeBtn.disabled = true;
+      proposeBtn.style.opacity = '0.5';
+      proposeBtn.style.cursor = 'not-allowed';
+    } else {
+      proposeBtn.onclick = openTradeModal;
+    }
+
+    // Handle favorite button
+    const favoriteBtn = document.getElementById('btnFavorite');
+    const favoriteIcon = document.getElementById('favoriteIcon');
+    const favoriteText = document.getElementById('favoriteText');
+
+    function updateFavoriteButton() {
+      const isFav = dataManager.isFavorite(listingId);
+      favoriteIcon.textContent = isFav ? '♥' : '♡';
+      favoriteText.textContent = isFav ? 'Ukloni iz omiljenih' : 'Dodaj u omiljene';
+      favoriteIcon.style.color = isFav ? '#EF4444' : 'inherit';
+    }
+
+    if (!currentUser) {
+      favoriteBtn.onclick = () => {
+        window.location.href = 'login.html';
+      };
+    } else if (currentUser.id === listing.userId) {
+      favoriteBtn.style.display = 'none';
+    } else {
+      favoriteBtn.onclick = () => {
+        const result = dataManager.toggleFavorite(listingId);
+        if (result.success) {
+          updateFavoriteButton();
+          const isFav = result.isFavorite;
+          if (isFav) {
+            Toast.success('Dodato u omiljene');
+          } else {
+            Toast.success('Uklonjeno iz omiljenih');
+          }
+        } else {
+          Toast.error('Greška: ' + result.error);
+        }
+      };
+      updateFavoriteButton();
+    }
+
+    // Render similar listings
+    const similarListings = getRandomListings(4, listingId);
+    document.getElementById('similarListings').innerHTML = similarListings.map(item => `
+      <a href="listing-detail.html?id=${item.id}" class="listing-card">
+        <img src="${item.images[0]}" alt="${item.title}" class="listing-card-image">
+        <div class="listing-card-content">
+          <div class="badge badge-category">${item.categoryName}</div>
+          <h3 class="listing-card-title">${item.title}</h3>
+          <div class="listing-card-footer">
+            <div class="listing-card-points">${item.points} poena</div>
+            <div class="listing-card-location">${item.city}</div>
+          </div>
+        </div>
+      </a>
+    `).join('');
+
+    // Trade modal functions
+    function openTradeModal() {
+      if (!currentUser) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const myListings = dataManager.getListings().filter(l => l.userId === currentUser.id);
+
+      if (myListings.length === 0) {
+        alert('Nemate nijedan oglas. Prvo dodajte oglas kako biste mogli da predložite razmenu.');
+        window.location.href = 'create-listing.html';
+        return;
+      }
+
+      const listingsHtml = myListings.map(item => `
+        <label class="listing-option">
+          <input type="radio" name="tradeListing" value="${item.id}">
+          <img src="${item.images[0]}" alt="${item.title}" class="listing-option-image">
+          <div class="listing-option-info">
+            <div class="listing-option-title">${item.title}</div>
+            <div class="listing-option-points">${item.points} poena</div>
+          </div>
+        </label>
+      `).join('');
+
+      document.getElementById('myListingsSelect').innerHTML = listingsHtml;
+
+      // Add click handlers to labels
+      document.querySelectorAll('.listing-option').forEach(option => {
+        option.addEventListener('click', function() {
+          document.querySelectorAll('.listing-option').forEach(opt => opt.classList.remove('selected'));
+          this.classList.add('selected');
+        });
+      });
+
+      document.getElementById('tradeModal').classList.add('show');
+    }
+
+    function closeTradeModal() {
+      document.getElementById('tradeModal').classList.remove('show');
+      document.getElementById('tradeMessage').value = '';
+    }
+
+    function submitTrade() {
+      const selectedListingInput = document.querySelector('input[name="tradeListing"]:checked');
+
+      if (!selectedListingInput) {
+        alert('Molimo izaberite oglas za razmenu');
+        return;
+      }
+
+      const tradeData = {
+        offeredListingId: parseInt(selectedListingInput.value),
+        requestedListingId: listingId,
+        ownerId: listing.userId,
+        message: document.getElementById('tradeMessage').value
+      };
+
+      const result = dataManager.createTrade(tradeData);
+
+      if (result.success) {
+        closeTradeModal();
+        alert('Predlog razmene je uspešno poslat!');
+        window.location.href = 'trades.html';
+      } else {
+        alert('Greška: ' + result.error);
+      }
+    }
+
+    function changeMainImage(src, index) {
+      document.getElementById('mainImage').src = src;
+      document.querySelectorAll('.thumbnail').forEach((thumb, i) => {
+        thumb.classList.toggle('active', i === index);
+      });
+    }
+
+    // Close modal on outside click
+    document.getElementById('tradeModal').addEventListener('click', (e) => {
+      if (e.target.id === 'tradeModal') {
+        closeTradeModal();
+      }
+    });
+  </script>
+</body>
+</html>

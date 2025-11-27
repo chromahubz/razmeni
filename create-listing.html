@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dodaj oglas - Razmeni</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .create-container {
+      min-height: 100vh;
+      background: var(--gray-50);
+      padding: 2rem 0;
+    }
+
+    .create-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      padding: 3rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .create-header {
+      margin-bottom: 2.5rem;
+    }
+
+    .create-header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .create-header p {
+      color: var(--gray-600);
+      font-size: 15px;
+    }
+
+    .form-section {
+      margin-bottom: 2.5rem;
+      padding-bottom: 2.5rem;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .form-section:last-of-type {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: var(--gray-900);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--gray-900);
+    }
+
+    .form-label-desc {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--gray-600);
+      margin-left: 0.25rem;
+    }
+
+    .form-input,
+    .form-textarea,
+    .form-select {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius);
+      font-size: 15px;
+      transition: all 0.2s;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus,
+    .form-select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .category-option {
+      position: relative;
+    }
+
+    .category-option input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+    }
+
+    .category-option label {
+      display: block;
+      padding: 1rem;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .category-option input[type="radio"]:checked + label {
+      border-color: var(--primary);
+      background: rgba(0, 122, 255, 0.05);
+      color: var(--primary);
+    }
+
+    .category-option label:hover {
+      border-color: var(--primary);
+    }
+
+    .image-upload-area {
+      border: 2px dashed var(--gray-300);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .image-upload-area:hover {
+      border-color: var(--primary);
+      background: rgba(0, 122, 255, 0.02);
+    }
+
+    .image-upload-area input[type="file"] {
+      display: none;
+    }
+
+    .upload-icon {
+      font-size: 48px;
+      color: var(--gray-400);
+      margin-bottom: 1rem;
+    }
+
+    .upload-text {
+      font-size: 15px;
+      color: var(--gray-700);
+      margin-bottom: 0.5rem;
+    }
+
+    .upload-hint {
+      font-size: 13px;
+      color: var(--gray-500);
+    }
+
+    .image-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .image-preview {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--gray-200);
+    }
+
+    .image-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .image-preview-remove {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      width: 24px;
+      height: 24px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .image-preview-remove:hover {
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .checkbox-option {
+      display: flex;
+      align-items: center;
+    }
+
+    .checkbox-option input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-right: 0.75rem;
+      cursor: pointer;
+    }
+
+    .checkbox-option label {
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .btn-submit {
+      flex: 1;
+      padding: 1rem;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .btn-cancel {
+      padding: 1rem 2rem;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .form-error {
+      color: #dc2626;
+      font-size: 14px;
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    .form-error.show {
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      .create-card {
+        padding: 2rem 1.5rem;
+      }
+
+      .category-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .image-preview-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container navbar-content">
+      <!-- Navbar will be rendered by navbar.js -->
+    </div>
+  </nav>
+
+  <div class="create-container">
+    <div class="create-card">
+      <div class="create-header">
+        <h1>Dodaj novi oglas</h1>
+        <p>Popunite informacije o proizvodu ili usluzi koju želite da razmenjujete</p>
+      </div>
+
+      <form id="createListingForm">
+        <!-- Basic Info -->
+        <div class="form-section">
+          <h3 class="section-title">Osnovne informacije</h3>
+
+          <div class="form-group">
+            <label class="form-label" for="title">
+              Naslov oglasa
+              <span class="form-label-desc">Kratak i jasan opis</span>
+            </label>
+            <input
+              type="text"
+              id="title"
+              class="form-input"
+              placeholder="npr. Domaće jabuke iz organskog voćnjaka"
+              required
+              maxlength="100"
+            >
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="description">
+              Opis
+              <span class="form-label-desc">Detaljne informacije</span>
+            </label>
+            <textarea
+              id="description"
+              class="form-textarea"
+              placeholder="Opišite proizvod/uslugu, stanje, karakteristike..."
+              required
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Kategorija</label>
+            <div class="category-grid">
+              <div class="category-option">
+                <input type="radio" name="category" id="cat-voce" value="voce" required>
+                <label for="cat-voce">Voće</label>
+              </div>
+              <div class="category-option">
+                <input type="radio" name="category" id="cat-povrce" value="povrce">
+                <label for="cat-povrce">Povrće</label>
+              </div>
+              <div class="category-option">
+                <input type="radio" name="category" id="cat-mlecni" value="mlecni">
+                <label for="cat-mlecni">Mlečni proizvodi</label>
+              </div>
+              <div class="category-option">
+                <input type="radio" name="category" id="cat-pekarski" value="pekarski">
+                <label for="cat-pekarski">Pekarski</label>
+              </div>
+              <div class="category-option">
+                <input type="radio" name="category" id="cat-usluge" value="usluge">
+                <label for="cat-usluge">Usluge</label>
+              </div>
+              <div class="category-option">
+                <input type="radio" name="category" id="cat-ostalo" value="ostalo">
+                <label for="cat-ostalo">Ostalo</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Details -->
+        <div class="form-section">
+          <h3 class="section-title">Detalji</h3>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="points">
+                Vrednost u poenima
+                <span class="form-label-desc">Sugerisana cena</span>
+              </label>
+              <input
+                type="number"
+                id="points"
+                class="form-input"
+                placeholder="npr. 50"
+                required
+                min="1"
+                max="10000"
+              >
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="condition">Stanje</label>
+              <select id="condition" class="form-select" required>
+                <option value="">Izaberite...</option>
+                <option value="new">Novo</option>
+                <option value="like-new">Kao novo</option>
+                <option value="used">Korišćeno</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="quantity">
+                Količina
+                <span class="form-label-desc">Broj ili kg</span>
+              </label>
+              <input
+                type="text"
+                id="quantity"
+                class="form-input"
+                placeholder="npr. 5 kg"
+              >
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="city">Lokacija</label>
+              <input
+                type="text"
+                id="city"
+                class="form-input"
+                placeholder="Grad"
+                required
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Images -->
+        <div class="form-section">
+          <h3 class="section-title">Fotografije</h3>
+
+          <div class="image-upload-area" onclick="document.getElementById('imageInput').click()">
+            <input
+              type="file"
+              id="imageInput"
+              accept="image/*"
+              multiple
+              onchange="handleImageUpload(event)"
+            >
+            <div class="upload-icon">+</div>
+            <div class="upload-text">Dodajte fotografije</div>
+            <div class="upload-hint">Maksimalno 5 slika (JPG, PNG)</div>
+          </div>
+
+          <div class="image-preview-grid" id="imagePreviewGrid"></div>
+        </div>
+
+        <!-- Delivery Options -->
+        <div class="form-section">
+          <h3 class="section-title">Opcije dostave</h3>
+
+          <div class="checkbox-group">
+            <div class="checkbox-option">
+              <input type="checkbox" id="pickup" value="pickup" checked>
+              <label for="pickup">Lično preuzimanje</label>
+            </div>
+            <div class="checkbox-option">
+              <input type="checkbox" id="delivery" value="delivery">
+              <label for="delivery">Dostava moguća</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-error" id="errorMessage"></div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary btn-cancel" onclick="window.location.href='dashboard.html'">
+            Otkaži
+          </button>
+          <button type="submit" class="btn btn-primary btn-submit">
+            Objavi oglas
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/mockData.js"></script>
+  <script src="js/dataManager.js"></script>
+  <script src="js/navbar.js"></script>
+  <script>
+    // Check if logged in
+    if (!dataManager.isLoggedIn()) {
+      window.location.href = 'login.html';
+    }
+
+    const currentUser = dataManager.getCurrentUser();
+
+    // Image handling
+    let uploadedImages = [];
+
+    function handleImageUpload(event) {
+      const files = Array.from(event.target.files);
+      const errorMessage = document.getElementById('errorMessage');
+
+      if (uploadedImages.length + files.length > 5) {
+        errorMessage.textContent = 'Možete dodati maksimalno 5 slika';
+        errorMessage.classList.add('show');
+        return;
+      }
+
+      files.forEach(file => {
+        if (!file.type.startsWith('image/')) {
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          uploadedImages.push(e.target.result);
+          renderImagePreviews();
+          errorMessage.classList.remove('show');
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function renderImagePreviews() {
+      const grid = document.getElementById('imagePreviewGrid');
+      grid.innerHTML = uploadedImages.map((img, index) => `
+        <div class="image-preview">
+          <img src="${img}" alt="Preview ${index + 1}">
+          <button type="button" class="image-preview-remove" onclick="removeImage(${index})">×</button>
+        </div>
+      `).join('');
+    }
+
+    function removeImage(index) {
+      uploadedImages.splice(index, 1);
+      renderImagePreviews();
+    }
+
+    // Form submission
+    document.getElementById('createListingForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const errorMessage = document.getElementById('errorMessage');
+
+      // Validate images
+      if (uploadedImages.length === 0) {
+        errorMessage.textContent = 'Dodajte najmanje jednu fotografiju';
+        errorMessage.classList.add('show');
+        return;
+      }
+
+      // Get form data
+      const formData = {
+        title: document.getElementById('title').value,
+        description: document.getElementById('description').value,
+        category: document.querySelector('input[name="category"]:checked').value,
+        points: parseInt(document.getElementById('points').value),
+        condition: document.getElementById('condition').value,
+        quantity: document.getElementById('quantity').value,
+        city: document.getElementById('city').value,
+        images: uploadedImages,
+        delivery: {
+          pickup: document.getElementById('pickup').checked,
+          delivery: document.getElementById('delivery').checked
+        }
+      };
+
+      // Get category info
+      const categories = {
+        'voce': { name: 'Voće', icon: '' },
+        'povrce': { name: 'Povrće', icon: '' },
+        'mlecni': { name: 'Mlečni proizvodi', icon: '' },
+        'pekarski': { name: 'Pekarski proizvodi', icon: '' },
+        'usluge': { name: 'Usluge', icon: '' },
+        'ostalo': { name: 'Ostalo', icon: '' }
+      };
+
+      const categoryInfo = categories[formData.category];
+
+      // Create listing object
+      const listingData = {
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        categoryName: categoryInfo.name,
+        categoryIcon: categoryInfo.icon,
+        points: formData.points,
+        condition: formData.condition,
+        quantity: formData.quantity,
+        city: formData.city,
+        images: formData.images,
+        delivery: formData.delivery
+      };
+
+      // Save listing
+      const result = dataManager.createListing(listingData);
+
+      if (result.success) {
+        // Redirect to listing detail page
+        window.location.href = `listing-detail.html?id=${result.listing.id}`;
+      } else {
+        errorMessage.textContent = result.error;
+        errorMessage.classList.add('show');
+      }
+    });
+  </script>
+</body>
+</html>

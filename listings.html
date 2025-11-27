@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oglasi - Razmeni</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container navbar-content">
+      <!-- Navbar will be rendered by navbar.js -->
+    </div>
+  </nav>
+
+  <!-- Search & Filters -->
+  <section class="section" style="padding-top: 3rem; padding-bottom: 1rem;">
+    <div class="container">
+      <h1 style="font-size: 42px; font-weight: 700; margin-bottom: 1.5rem;">Svi oglasi</h1>
+
+      <div class="search-bar">
+        <div class="search-input-wrapper">
+          <input type="text" class="search-input" id="search" placeholder="Pretraži oglase...">
+        </div>
+
+        <div class="filters">
+          <select class="filter-select" id="category-filter">
+            <option value="">Sve kategorije</option>
+            <option value="voce">Voće</option>
+            <option value="povrce">Povrće</option>
+            <option value="mlecni">Mlečni proizvodi</option>
+            <option value="pekarski">Pekarski proizvodi</option>
+            <option value="usluge">Usluge</option>
+            <option value="ostalo">Ostalo</option>
+          </select>
+
+          <select class="filter-select" id="city-filter">
+            <option value="">Svi gradovi</option>
+            <option value="Beograd">Beograd</option>
+            <option value="Novi Sad">Novi Sad</option>
+            <option value="Niš">Niš</option>
+            <option value="Kragujevac">Kragujevac</option>
+            <option value="Subotica">Subotica</option>
+          </select>
+
+          <select class="filter-select" id="sort-filter">
+            <option value="newest">Najnovije</option>
+            <option value="oldest">Najstarije</option>
+            <option value="price-low">Poeni: Niži prvo</option>
+            <option value="price-high">Poeni: Viši prvo</option>
+          </select>
+
+          <button class="btn btn-secondary" id="reset-filters">Resetuj filtere</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Listings Grid -->
+  <section class="section" style="padding-top: 2rem;">
+    <div class="container">
+      <div id="listings-count" style="margin-bottom: 1.5rem; color: var(--gray-600); font-size: 15px;">
+        Prikazujem <strong id="count">0</strong> oglasa
+      </div>
+
+      <div class="grid grid-3" id="listings-grid">
+        <!-- Listings će biti ubačeni sa JavaScript-om -->
+      </div>
+
+      <div id="no-results" style="display: none; text-align: center; padding: 4rem 0;">
+        <p style="font-size: 18px; color: var(--gray-600);">Nema oglasa koji odgovaraju vašim kriterijumima.</p>
+        <button class="btn btn-primary mt-8" id="reset-from-empty">Resetuj filtere</button>
+      </div>
+
+      <!-- Pagination -->
+      <div id="pagination" style="display: none; margin-top: 3rem; text-align: center;">
+        <div style="display: inline-flex; gap: 0.5rem; align-items: center;">
+          <button id="prevPage" class="btn btn-secondary" style="padding: 0.5rem 1rem;">
+            ‹ Prethodna
+          </button>
+          <div id="pageNumbers" style="display: flex; gap: 0.5rem;"></div>
+          <button id="nextPage" class="btn btn-secondary" style="padding: 0.5rem 1rem;">
+            Sledeća ›
+          </button>
+        </div>
+        <div style="margin-top: 1rem; color: var(--gray-600); font-size: 14px;">
+          Stranica <span id="currentPageNum">1</span> od <span id="totalPages">1</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Razmeni</h3>
+          <ul class="footer-links">
+            <li><a href="#">O nama</a></li>
+            <li><a href="#">Kako funkcioniše</a></li>
+            <li><a href="#">Blog</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h3>Podrška</h3>
+          <ul class="footer-links">
+            <li><a href="#">Pomoć</a></li>
+            <li><a href="#">Kontakt</a></li>
+            <li><a href="#">FAQ</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h3>Pravno</h3>
+          <ul class="footer-links">
+            <li><a href="#">Uslovi korišćenja</a></li>
+            <li><a href="#">Politika privatnosti</a></li>
+            <li><a href="#">Kolačići</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        &copy; 2024 Razmeni. Sva prava zadržana.
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/mockData.js"></script>
+  <script src="js/dataManager.js"></script>
+  <script src="js/navbar.js"></script>
+  <script>
+    // Get URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlCategory = urlParams.get('category');
+
+    // Set initial filter if coming from homepage
+    if (urlCategory) {
+      document.getElementById('category-filter').value = urlCategory;
+    }
+
+    // Pagination state
+    let currentPage = 1;
+    const itemsPerPage = 12;
+    let allListings = [];
+
+    // Load and display listings
+    function loadListings() {
+      const search = document.getElementById('search').value;
+      const category = document.getElementById('category-filter').value;
+      const city = document.getElementById('city-filter').value;
+      const sort = document.getElementById('sort-filter').value;
+
+      const filters = {
+        search,
+        category,
+        city,
+        sort
+      };
+
+      allListings = dataManager.getListings(filters);
+      currentPage = 1; // Reset to first page on filter change
+      renderListings();
+    }
+
+    function renderListings() {
+      // Update count
+      document.getElementById('count').textContent = allListings.length;
+
+      const grid = document.getElementById('listings-grid');
+      const noResults = document.getElementById('no-results');
+      const pagination = document.getElementById('pagination');
+
+      if (allListings.length === 0) {
+        grid.style.display = 'none';
+        noResults.style.display = 'block';
+        pagination.style.display = 'none';
+      } else {
+        grid.style.display = 'grid';
+        noResults.style.display = 'none';
+
+        // Calculate pagination
+        const totalPages = Math.ceil(allListings.length / itemsPerPage);
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const pageListings = allListings.slice(startIndex, endIndex);
+
+        // Render listings for current page
+        grid.innerHTML = pageListings.map(listing => {
+          const imageUrl = listing.images && listing.images.length > 0
+            ? listing.images[0]
+            : 'https://via.placeholder.com/400x300/667eea/ffffff?text=Razmeni';
+
+          return `
+          <a href="listing-detail.html?id=${listing.id}" class="listing-card">
+            <img src="${imageUrl}" alt="${listing.title}" class="listing-card-image">
+            <div class="listing-card-content">
+              <div class="badge badge-category">${listing.categoryName}</div>
+              <h3 class="listing-card-title">${listing.title}</h3>
+              <p class="listing-card-desc">${listing.description.substring(0, 100)}...</p>
+
+              <div class="listing-card-footer">
+                <div class="listing-card-points">${listing.points} poena</div>
+                <div class="listing-card-location">${listing.city}</div>
+              </div>
+            </div>
+          </a>
+        `;
+        }).join('');
+
+        // Show/hide pagination
+        if (totalPages > 1) {
+          pagination.style.display = 'block';
+          renderPagination(totalPages);
+        } else {
+          pagination.style.display = 'none';
+        }
+
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function renderPagination(totalPages) {
+      const pageNumbers = document.getElementById('pageNumbers');
+      const prevBtn = document.getElementById('prevPage');
+      const nextBtn = document.getElementById('nextPage');
+
+      // Update page info
+      document.getElementById('currentPageNum').textContent = currentPage;
+      document.getElementById('totalPages').textContent = totalPages;
+
+      // Enable/disable prev/next buttons
+      prevBtn.disabled = currentPage === 1;
+      nextBtn.disabled = currentPage === totalPages;
+      prevBtn.style.opacity = currentPage === 1 ? '0.5' : '1';
+      nextBtn.style.opacity = currentPage === totalPages ? '0.5' : '1';
+
+      // Render page numbers (show max 5 pages)
+      let pages = [];
+      if (totalPages <= 5) {
+        pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+      } else {
+        if (currentPage <= 3) {
+          pages = [1, 2, 3, 4, '...', totalPages];
+        } else if (currentPage >= totalPages - 2) {
+          pages = [1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+        } else {
+          pages = [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+        }
+      }
+
+      pageNumbers.innerHTML = pages.map(page => {
+        if (page === '...') {
+          return `<span style="padding: 0.5rem;">...</span>`;
+        }
+        const isActive = page === currentPage;
+        return `
+          <button
+            onclick="goToPage(${page})"
+            class="btn ${isActive ? 'btn-primary' : 'btn-secondary'}"
+            style="padding: 0.5rem 1rem; min-width: 40px;"
+          >
+            ${page}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function goToPage(page) {
+      currentPage = page;
+      renderListings();
+    }
+
+    function nextPage() {
+      const totalPages = Math.ceil(allListings.length / itemsPerPage);
+      if (currentPage < totalPages) {
+        currentPage++;
+        renderListings();
+      }
+    }
+
+    function prevPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        renderListings();
+      }
+    }
+
+    // Add button listeners
+    document.getElementById('prevPage').addEventListener('click', prevPage);
+    document.getElementById('nextPage').addEventListener('click', nextPage);
+
+    // Add event listeners
+    document.getElementById('search').addEventListener('input', loadListings);
+    document.getElementById('category-filter').addEventListener('change', loadListings);
+    document.getElementById('city-filter').addEventListener('change', loadListings);
+    document.getElementById('sort-filter').addEventListener('change', loadListings);
+
+    document.getElementById('reset-filters').addEventListener('click', () => {
+      document.getElementById('search').value = '';
+      document.getElementById('category-filter').value = '';
+      document.getElementById('city-filter').value = '';
+      document.getElementById('sort-filter').value = 'newest';
+      loadListings();
+    });
+
+    document.getElementById('reset-from-empty').addEventListener('click', () => {
+      document.getElementById('search').value = '';
+      document.getElementById('category-filter').value = '';
+      document.getElementById('city-filter').value = '';
+      document.getElementById('sort-filter').value = 'newest';
+      loadListings();
+    });
+
+    // Initial load
+    loadListings();
+  </script>
+</body>
+</html>
