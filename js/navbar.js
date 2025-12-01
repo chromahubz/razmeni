@@ -55,7 +55,7 @@ function renderNavbar() {
   if (currentUser) {
     actions = `
       <div class="navbar-actions">
-        <a href="profile.html" style="font-size: 14px; color: var(--gray-700); margin-right: 1rem; text-decoration: none; font-weight: 500;">${currentUser.fullName}</a>
+        <a href="profile.html" style="font-size: 14px; color: var(--gray-700); margin-right: 1.5rem; text-decoration: none; font-weight: 500;">${currentUser.fullName}</a>
         <button class="btn btn-secondary" onclick="logout()">Odjavi se</button>
       </div>
     `;

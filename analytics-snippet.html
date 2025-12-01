@@ -1,0 +1,110 @@
+<!-- Analytics & Tracking Snippets -->
+<!-- Dodati PRE zatvaranja </head> taga -->
+
+<!-- Google Analytics (GA4) -->
+<!-- Replace G-XXXXXXXXXX with your actual Measurement ID -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX', {
+    'cookie_domain': 'razmeni.rs',
+    'cookie_flags': 'SameSite=None;Secure'
+  });
+</script>
+
+<!-- ALTERNATIVE: Plausible Analytics (Privacy-Friendly) -->
+<!-- Uncomment if using Plausible instead of Google Analytics -->
+<!--
+<script defer data-domain="razmeni.rs" src="https://plausible.io/js/script.js"></script>
+-->
+
+<!-- Error Tracking - Sentry (Optional) -->
+<!-- Replace YOUR_DSN with actual Sentry DSN -->
+<!--
+<script src="https://browser.sentry-cdn.com/7.x.x/bundle.min.js" crossorigin="anonymous"></script>
+<script>
+  Sentry.init({
+    dsn: 'YOUR_DSN',
+    environment: 'production',
+    tracesSampleRate: 0.1
+  });
+</script>
+-->
+
+<!-- Facebook Pixel (Optional - for marketing) -->
+<!--
+<script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', 'YOUR_PIXEL_ID');
+  fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID&ev=PageView&noscript=1"
+/></noscript>
+-->
+
+<!-- Hotjar - Behavior Analytics (Optional) -->
+<!--
+<script>
+    (function(h,o,t,j,a,r){
+        h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+        h._hjSettings={hjid:YOUR_SITE_ID,hjsv:6};
+        a=o.getElementsByTagName('head')[0];
+        r=o.createElement('script');r.async=1;
+        r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+        a.appendChild(r);
+    })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+</script>
+-->
+
+<!-- Custom Event Tracking (Optional) -->
+<script>
+  // Track custom events
+  function trackEvent(eventName, eventParams) {
+    if (typeof gtag !== 'undefined') {
+      gtag('event', eventName, eventParams);
+    }
+    console.log('Event tracked:', eventName, eventParams);
+  }
+
+  // Example usage:
+  // trackEvent('listing_created', { category: 'Voće', city: 'Beograd' });
+  // trackEvent('trade_proposed', { listingId: 'abc123' });
+  // trackEvent('message_sent', { tradeId: 'xyz789' });
+</script>
+
+<!-- Performance Monitoring -->
+<script>
+  // Track page load performance
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      const perfData = window.performance.timing;
+      const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
+      const connectTime = perfData.responseEnd - perfData.requestStart;
+      const renderTime = perfData.domComplete - perfData.domLoading;
+
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'timing_complete', {
+          name: 'page_load',
+          value: pageLoadTime,
+          event_category: 'Performance'
+        });
+      }
+
+      console.log('Performance Metrics:', {
+        pageLoadTime: pageLoadTime + 'ms',
+        connectTime: connectTime + 'ms',
+        renderTime: renderTime + 'ms'
+      });
+    }, 0);
+  });
+</script>

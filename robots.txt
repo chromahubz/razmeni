@@ -1,0 +1,14 @@
+# robots.txt for Razmeni
+
+User-agent: *
+Allow: /
+
+# Disallow admin/private pages (when added in future)
+Disallow: /admin/
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://razmeni.rs/sitemap.xml
+
+# Crawl-delay for polite crawlers
+Crawl-delay: 1
